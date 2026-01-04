@@ -1083,11 +1083,17 @@ function init() {
   UI.renderMonthsList(state.months, state.currentMonthId);
   showTab("commissions");
 
-  // Try to load current month if exists
-  if (state.months[currentMonth]) {
+  // Load the last saved month (currentMonthId) if it exists, otherwise use current calendar month
+  if (state.currentMonthId && state.months[state.currentMonthId]) {
+    // Load the previously saved month
+    document.getElementById("currentMonth").value = state.currentMonthId;
+    Events.hydrateMonthInputs(state.months[state.currentMonthId]);
+  } else if (state.months[currentMonth]) {
+    // Load current calendar month if it has data
     StateManager.update(s => ({ ...s, currentMonthId: currentMonth }));
     Events.hydrateMonthInputs(state.months[currentMonth]);
   }
+  // If neither exists, inputs stay at zero (new month)
 }
 
 init();
