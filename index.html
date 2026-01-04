@@ -1,0 +1,1798 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Jace Pay Calculator – Hendrick Toyota Merriam</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#111824; --muted:#9fb0c3; --text:#e9f1fb;
+      --accent:#4aa3ff; --good:#2dd4bf; --warn:#fbbf24; --bad:#fb7185;
+      --border:#1f2a3a; --chip:#0f1723;
+      --hendrick-red: #cc0000;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; background:linear-gradient(180deg, #070a0f, #0b0f14 40%); color:var(--text); font-family:var(--sans);}
+    header{position:sticky; top:0; z-index:20; backdrop-filter: blur(10px);
+      background:rgba(11,15,20,.85); border-bottom:1px solid var(--border);}
+    .wrap{max-width:1200px; margin:0 auto; padding:16px;}
+    .header-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+    h1{font-size:18px; margin:0; letter-spacing:.2px}
+    .dealer-badge{background:var(--hendrick-red); color:white; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; letter-spacing:.5px;}
+    .sub{color:var(--muted); font-size:12px; margin-top:6px}
+    nav{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+    .tab{border:1px solid var(--border); background:var(--chip); color:var(--text);
+      padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13px;}
+    .tab.active{border-color:rgba(74,163,255,.7); box-shadow:0 0 0 2px rgba(74,163,255,.15) inset;}
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; align-items:start;}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr;} }
+    .card{background:rgba(17,24,36,.9); border:1px solid var(--border); border-radius:14px; padding:14px;}
+    .card h2{font-size:14px; margin:0 0 10px 0; color:#dce8f7;}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    @media (max-width: 680px){ .row{grid-template-columns:1fr;} }
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+    input, select, textarea{
+      width:100%; padding:10px; border-radius:10px;
+      border:1px solid var(--border); background:#0b1220; color:var(--text);
+      outline:none; font-family:var(--sans); font-size:16px;
+    }
+    input:focus, textarea:focus{border-color:rgba(74,163,255,.7); box-shadow:0 0 0 3px rgba(74,163,255,.15);}
+    .btn{
+      border:1px solid var(--border); background:#0b1220; color:var(--text);
+      padding:9px 10px; border-radius:10px; cursor:pointer; font-size:13px;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+    .btn.primary{border-color:rgba(74,163,255,.6); background:rgba(74,163,255,.12);}
+    .btn.good{border-color:rgba(45,212,191,.6); background:rgba(45,212,191,.12);}
+    .btn.warn{border-color:rgba(251,191,36,.6); background:rgba(251,191,36,.10);}
+    .btn.bad{border-color:rgba(251,113,133,.6); background:rgba(251,113,133,.10);}
+    .btn.large{padding:14px 18px; font-size:15px; font-weight:600;}
+    .btn:active{transform:translateY(1px)}
+    .btn:disabled{opacity:0.5; cursor:not-allowed;}
+    .muted{color:var(--muted); font-size:12px; line-height:1.4}
+    .kpis{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;}
+    @media (max-width: 980px){ .kpis{grid-template-columns:repeat(2, 1fr);} }
+    @media (max-width: 520px){ .kpis{grid-template-columns:1fr;} }
+    .kpi{background:#0b1220; border:1px solid var(--border); border-radius:12px; padding:10px;}
+    .kpi .t{font-size:11px; color:var(--muted); margin-bottom:8px;}
+    .kpi .v{font-size:18px; font-family:var(--mono);}
+    .kpi .d{font-size:11px; color:var(--muted); margin-top:6px;}
+    .kpi.highlight{border-color:var(--good); background:rgba(45,212,191,.08);}
+    .kpi.highlight .v{color:var(--good);}
+    table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--border);}
+    th, td{padding:9px 8px; border-bottom:1px solid var(--border); font-size:12px; text-align:left;}
+    th{background:#0f1723; color:#cfe0f7; font-weight:600;}
+    tr:hover td{background:rgba(74,163,255,.06);}
+    .right{text-align:right}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px;
+      border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--muted);}
+    .dot{width:8px; height:8px; border-radius:99px; background:var(--muted);}
+    .dot.good{background:var(--good);} .dot.warn{background:var(--warn);} .dot.bad{background:var(--bad);}
+    .flex{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .spacer{height:8px}
+    .spacer-lg{height:16px}
+    .hide{display:none !important}
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
+    @media (max-width: 980px){ .twoCol{grid-template-columns:1fr;} }
+    footer{padding:18px 0 30px; color:var(--muted); font-size:12px;}
+    .small{font-size:11px; color:var(--muted);}
+    .dangerNote{border-left:3px solid rgba(251,113,133,.75); padding-left:10px;}
+    .goodNote{border-left:3px solid rgba(45,212,191,.75); padding-left:10px;}
+
+    /* Quick Service Buttons */
+    .quick-services{display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:8px; margin-bottom:12px;}
+    .quick-btn{
+      background:rgba(74,163,255,.08); border:1px solid rgba(74,163,255,.3);
+      color:var(--accent); padding:10px 8px; border-radius:10px; cursor:pointer;
+      font-size:11px; text-align:center; transition: all 0.15s;
+    }
+    .quick-btn:hover{background:rgba(74,163,255,.15); border-color:rgba(74,163,255,.5);}
+    .quick-btn .price{font-size:13px; font-weight:600; display:block; margin-top:2px;}
+
+    /* Goals Progress */
+    .goal-bar{background:#0b1220; border-radius:8px; height:24px; overflow:hidden; position:relative; border:1px solid var(--border);}
+    .goal-fill{height:100%; background:linear-gradient(90deg, var(--good), var(--accent)); transition: width 0.4s ease;}
+    .goal-text{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:11px; font-weight:600; color:white; text-shadow:0 1px 2px rgba(0,0,0,.5);}
+
+    /* Today's Stats Banner */
+    .today-banner{background:linear-gradient(135deg, rgba(74,163,255,.1), rgba(45,212,191,.1)); border:1px solid rgba(74,163,255,.3); border-radius:12px; padding:14px; margin-bottom:14px;}
+    .today-banner h3{margin:0 0 10px 0; font-size:13px; color:var(--accent);}
+    .today-stats{display:flex; gap:20px; flex-wrap:wrap;}
+    .today-stat{text-align:center;}
+    .today-stat .val{font-size:22px; font-weight:700; font-family:var(--mono);}
+    .today-stat .lbl{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+
+    /* Keyboard hint */
+    .kbd{background:#1a2332; border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:10px; font-family:var(--mono); color:var(--muted);}
+
+    /* RO type indicator */
+    .ro-type{display:inline-block; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase;}
+    .ro-type.cp{background:rgba(74,163,255,.2); color:var(--accent);}
+    .ro-type.warranty{background:rgba(251,191,36,.2); color:var(--warn);}
+    .ro-type.internal{background:rgba(156,163,175,.2); color:#9ca3af;}
+    .ro-type.mixed{background:rgba(45,212,191,.2); color:var(--good);}
+
+    /* Period selector */
+    .period-selector{display:flex; gap:6px; margin-bottom:12px;}
+    .period-btn{background:var(--chip); border:1px solid var(--border); color:var(--muted); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;}
+    .period-btn.active{background:rgba(74,163,255,.12); border-color:var(--accent); color:var(--accent);}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="header-row">
+      <div>
+        <h1>Jace Pay Calculator</h1>
+        <div class="sub">Service Advisor Commission Tracker</div>
+      </div>
+      <span class="dealer-badge">HENDRICK TOYOTA MERRIAM</span>
+    </div>
+    <nav id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- TAB: BI-WEEKLY COMMISSIONS -->
+  <section class="tabPage" data-page="commissions">
+    <div class="grid">
+      <div class="card">
+        <!-- Today's Quick Stats -->
+        <div class="today-banner">
+          <h3>Today's Progress</h3>
+          <div class="today-stats">
+            <div class="today-stat">
+              <div class="val" id="todayROs">0</div>
+              <div class="lbl">ROs Today</div>
+            </div>
+            <div class="today-stat">
+              <div class="val" id="todaySales">$0</div>
+              <div class="lbl">Sales Today</div>
+            </div>
+            <div class="today-stat">
+              <div class="val" id="todayComm">$0</div>
+              <div class="lbl">Commission</div>
+            </div>
+            <div class="today-stat">
+              <div class="val" id="periodComm">$0</div>
+              <div class="lbl">This Period</div>
+            </div>
+          </div>
+        </div>
+
+        <h2>Quick Service Entry <span class="kbd">Tab</span> to navigate</h2>
+
+        <!-- Quick Service Buttons -->
+        <div class="quick-services">
+          <button class="quick-btn" data-service="lof">LOF<span class="price">$89.95</span></button>
+          <button class="quick-btn" data-service="synth">Synthetic LOF<span class="price">$109.95</span></button>
+          <button class="quick-btn" data-service="rotate">Tire Rotate<span class="price">$24.95</span></button>
+          <button class="quick-btn" data-service="brake-inspect">Brake Inspect<span class="price">$0</span></button>
+          <button class="quick-btn" data-service="alignment">Alignment<span class="price">$129.95</span></button>
+          <button class="quick-btn" data-service="diag">Diagnostic<span class="price">$189.95</span></button>
+          <button class="quick-btn" data-service="brakes">Brake Pads<span class="price">$349.95</span></button>
+          <button class="quick-btn" data-service="trans">Trans Service<span class="price">$249.95</span></button>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>RO # <span class="kbd">Enter</span> to add</label>
+            <input id="roNumber" placeholder="e.g., 123456" autocomplete="off" inputmode="numeric" />
+          </div>
+          <div>
+            <label>Date</label>
+            <input id="roDate" type="date" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Customer Pay (CP) Labor $</label>
+            <input id="cpLabor" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Customer Pay (CP) Parts $</label>
+            <input id="cpParts" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Warranty Labor $</label>
+            <input id="wLabor" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Warranty Parts $</label>
+            <input id="wParts" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Internal Labor $</label>
+            <input id="iLabor" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Internal Parts $</label>
+            <input id="iParts" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Sublet Labor $</label>
+            <input id="subletLabor" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Discounts $</label>
+            <input id="discounts" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Hours Sold</label>
+            <input id="hoursSold" type="number" min="0" step="0.1" value="0" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Customer Name (optional)</label>
+            <input id="customerName" placeholder="optional" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="flex">
+          <button class="btn primary large" id="addRO">Add RO</button>
+          <button class="btn" id="clearRO">Clear</button>
+          <span class="pill"><span class="dot good"></span>Autosaves</span>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="muted dangerNote">
+          <strong>Rates:</strong> 7% CP (labor+parts−discounts) | 5% Warranty | 5% Internal | 0.5% Sublet
+        </div>
+
+        <div class="spacer-lg"></div>
+
+        <!-- Period Management -->
+        <div class="card" style="padding:12px; margin-bottom:12px; background:rgba(74,163,255,.05); border-color:rgba(74,163,255,.2);">
+          <div class="flex" style="justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="flex" style="align-items:center; gap:8px;">
+              <label style="margin:0; font-size:12px;">Pay Period:</label>
+              <select id="periodSelect" class="btn" style="min-width:180px;">
+                <option value="current">Current Period</option>
+              </select>
+            </div>
+            <div class="flex" style="gap:6px;">
+              <button class="btn primary" id="newPeriod">New Period</button>
+              <button class="btn warn" id="closePeriod">Close Period</button>
+            </div>
+          </div>
+          <div id="periodInfo" class="small" style="margin-top:8px; color:var(--muted);"></div>
+        </div>
+
+        <!-- Period Filter -->
+        <div class="flex" style="justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;">RO History</h2>
+          <div class="period-selector">
+            <button class="period-btn active" data-period="all">All</button>
+            <button class="period-btn" data-period="today">Today</button>
+            <button class="period-btn" data-period="week">This Week</button>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div style="overflow:auto; max-height:400px;">
+          <table id="roTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>RO#</th>
+                <th>Type</th>
+                <th class="right">Total</th>
+                <th class="right">Commission</th>
+                <th class="right"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Bi-Weekly Goal Tracker</h2>
+
+        <!-- Goal Progress -->
+        <div style="margin-bottom:16px;">
+          <div class="flex" style="justify-content:space-between; margin-bottom:6px;">
+            <span class="small">CP Net Goal: $45,000</span>
+            <span class="small" id="goalPctText">0%</span>
+          </div>
+          <div class="goal-bar">
+            <div class="goal-fill" id="goalFill" style="width:0%"></div>
+            <span class="goal-text" id="goalText">$0 / $45,000</span>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi highlight"><div class="t">Total Commission</div><div class="v" id="kpiCommission">$0.00</div><div class="d">This period</div></div>
+          <div class="kpi"><div class="t">CP Net Sales</div><div class="v" id="kpiCpNet">$0.00</div><div class="d">Labor + parts − discounts</div></div>
+          <div class="kpi"><div class="t">Warranty Sales</div><div class="v" id="kpiW">$0.00</div><div class="d">Labor + parts</div></div>
+          <div class="kpi"><div class="t">Internal Sales</div><div class="v" id="kpiI">$0.00</div><div class="d">Labor + parts</div></div>
+          <div class="kpi"><div class="t">Sublet Labor</div><div class="v" id="kpiSublet">$0.00</div><div class="d">Labor only</div></div>
+          <div class="kpi"><div class="t">Hours Sold</div><div class="v" id="kpiHours">0.0</div><div class="d">From RO entries</div></div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="twoCol">
+          <div class="card" style="padding:12px; margin:0;">
+            <h2 style="margin-bottom:8px;">Commission Breakdown</h2>
+            <div class="muted" id="breakdownText"></div>
+          </div>
+          <div class="card" style="padding:12px; margin:0;">
+            <h2 style="margin-bottom:8px;">Efficiency Stats</h2>
+            <div class="muted" id="roiText"></div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="flex">
+          <button class="btn good" id="exportData">Export</button>
+          <button class="btn primary" id="importData">Import</button>
+          <button class="btn bad" id="wipeCommissions">Clear Period</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" />
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: MONTHLY BONUSES -->
+  <section class="tabPage hide" data-page="bonuses">
+    <div class="grid">
+      <div class="card">
+        <h2>Monthly Bonus Inputs</h2>
+
+        <div class="row">
+          <div>
+            <label>Month</label>
+            <input id="monthLabel" placeholder="e.g., Jan 2026" />
+          </div>
+          <div>
+            <label>CP Net (Labor+Parts − Discounts)</label>
+            <input id="monthlyCpNet" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="row">
+          <div>
+            <label>Google Reviews This Month</label>
+            <input id="reviewsCount" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+          <div>
+            <label>Tier Bonus Eligibility</label>
+            <select id="tierEligible">
+              <option value="auto">Auto (7+ reviews required)</option>
+              <option value="yes">Yes (force eligible)</option>
+              <option value="no">No (force ineligible)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="card" style="margin:0; padding:12px;">
+          <h2 style="margin-bottom:8px;">Objective Bonus Inputs</h2>
+
+          <div class="row">
+            <div>
+              <label>CP + Warranty Net (objective base)</label>
+              <input id="objBase" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+            </div>
+            <div>
+              <label>Objective Bonus Mode</label>
+              <select id="objMode">
+                <option value="weighted">Weighted by objectives met</option>
+                <option value="manual">Manual percent (override)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="spacer"></div>
+
+          <div id="objWeighted">
+            <div class="row">
+              <div><label><input type="checkbox" id="objAlign" /> Alignments (0.2%)</label></div>
+              <div><label><input type="checkbox" id="objTotLaborGross" /> Total labor gross (0.3%)</label></div>
+            </div>
+            <div class="row">
+              <div><label><input type="checkbox" id="objCpLaborGross" /> CP labor gross (0.2%)</label></div>
+              <div><label><input type="checkbox" id="objHag" /> HAG products (0.1%)</label></div>
+            </div>
+            <div class="row">
+              <div><label><input type="checkbox" id="objCpGrossPerRo" /> CP labor gross/RO (0.1%)</label></div>
+              <div><label><input type="checkbox" id="objHoursPerCpro" /> Hours per CP RO (0.1%)</label></div>
+            </div>
+          </div>
+
+          <div id="objManual" class="hide">
+            <label>Manual Objective Bonus % (0.0 to 1.0)</label>
+            <input id="objManualPct" type="number" min="0" max="1" step="0.001" value="0" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="flex">
+          <button class="btn primary" id="saveMonthly">Save Monthly Inputs</button>
+          <button class="btn" id="resetMonthly">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Monthly Bonus Results</h2>
+
+        <div class="kpis">
+          <div class="kpi"><div class="t">Tier Bonus %</div><div class="v" id="kpiTierPct">0.0%</div></div>
+          <div class="kpi"><div class="t">Tier Bonus $</div><div class="v" id="kpiTierDollars">$0.00</div></div>
+          <div class="kpi"><div class="t">Objective Bonus %</div><div class="v" id="kpiObjPct">0.0%</div></div>
+          <div class="kpi"><div class="t">Objective Bonus $</div><div class="v" id="kpiObjDollars">$0.00</div></div>
+          <div class="kpi"><div class="t">Review Bonus</div><div class="v" id="kpiReviewBonus">$0.00</div></div>
+          <div class="kpi highlight"><div class="t">Total Monthly Bonus</div><div class="v" id="kpiTotalMonthly">$0.00</div></div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="card" style="margin:0; padding:12px;">
+          <h2 style="margin-bottom:8px;">Bonus Requirements</h2>
+          <div id="monthlyStatus" class="muted"></div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- Tier Breakdown -->
+        <div class="card" style="margin:0; padding:12px;">
+          <h2 style="margin-bottom:8px;">Tier Levels</h2>
+          <div class="muted">
+            <div id="tierBreakdown"></div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="flex">
+          <button class="btn bad" id="wipeAll">Wipe ALL Data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="flex" style="justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <span>Hendrick Toyota Merriam | Service Advisor Pay Calculator</span>
+      <span>Data stored locally on this device only</span>
+    </div>
+  </footer>
+</main>
+
+<script>
+/* ============
+   CORE: MODELS
+============ */
+const Models = {
+  createRO(data = {}) {
+    return {
+      date: data.date || new Date().toISOString().split('T')[0],
+      roNumber: data.roNumber || "",
+      customer: data.customer || "",
+      cpLabor: Math.max(0, Number(data.cpLabor) || 0),
+      cpParts: Math.max(0, Number(data.cpParts) || 0),
+      wLabor: Math.max(0, Number(data.wLabor) || 0),
+      wParts: Math.max(0, Number(data.wParts) || 0),
+      iLabor: Math.max(0, Number(data.iLabor) || 0),
+      iParts: Math.max(0, Number(data.iParts) || 0),
+      subletLabor: Math.max(0, Number(data.subletLabor) || 0),
+      discounts: Math.max(0, Number(data.discounts) || 0),
+      hoursSold: Math.max(0, Number(data.hoursSold) || 0),
+      timestamp: data.timestamp || Date.now(),
+    };
+  },
+
+  validateRO(ro) {
+    const errors = [];
+    if (!ro.roNumber.trim()) errors.push("RO# required");
+    return errors;
+  },
+
+  getROType(ro) {
+    const hasCp = ro.cpLabor > 0 || ro.cpParts > 0;
+    const hasW = ro.wLabor > 0 || ro.wParts > 0;
+    const hasI = ro.iLabor > 0 || ro.iParts > 0;
+    const count = [hasCp, hasW, hasI].filter(Boolean).length;
+    if (count > 1) return 'mixed';
+    if (hasW) return 'warranty';
+    if (hasI) return 'internal';
+    return 'cp';
+  }
+};
+
+/* ============
+   QUICK SERVICES - Hendrick Toyota Merriam Pricing
+============ */
+const QuickServices = {
+  lof: { cpLabor: 49.95, cpParts: 40.00, hours: 0.5 },
+  synth: { cpLabor: 59.95, cpParts: 50.00, hours: 0.5 },
+  rotate: { cpLabor: 24.95, cpParts: 0, hours: 0.3 },
+  'brake-inspect': { cpLabor: 0, cpParts: 0, hours: 0.2 },
+  alignment: { cpLabor: 99.95, cpParts: 30.00, hours: 1.0 },
+  diag: { cpLabor: 189.95, cpParts: 0, hours: 1.5 },
+  brakes: { cpLabor: 179.95, cpParts: 170.00, hours: 1.5 },
+  trans: { cpLabor: 149.95, cpParts: 100.00, hours: 1.0 },
+};
+
+/* ============
+   CORE: CALCULATOR
+============ */
+const Calculator = {
+  rates: {
+    cp: 0.07,
+    w: 0.05,
+    i: 0.05,
+    sublet: 0.005,
+  },
+
+  tierLevels: [
+    { threshold: 35000, addPct: 0.005, label: '$35K' },
+    { threshold: 45000, addPct: 0.005, label: '$45K' },
+    { threshold: 55000, addPct: 0.005, label: '$55K' },
+    { threshold: 65000, addPct: 0.005, label: '$65K' },
+  ],
+
+  biWeeklyGoal: 45000,
+
+  objWeights: {
+    align: 0.002,
+    totLaborGross: 0.003,
+    cpLaborGross: 0.002,
+    hag: 0.001,
+    cpGrossPerRo: 0.001,
+    hoursPerCpro: 0.001,
+  },
+
+  calcRO(ro) {
+    const cpNet = Math.max(0, ro.cpLabor + ro.cpParts - ro.discounts);
+    const wSales = ro.wLabor + ro.wParts;
+    const iSales = ro.iLabor + ro.iParts;
+    const subletSales = ro.subletLabor;
+
+    const commission =
+      cpNet * this.rates.cp +
+      wSales * this.rates.w +
+      iSales * this.rates.i +
+      subletSales * this.rates.sublet;
+
+    const total = cpNet + wSales + iSales + subletSales;
+
+    return { cpNet, wSales, iSales, subletSales, commission, total };
+  },
+
+  calcPeriodTotals(ros) {
+    return ros.reduce(
+      (acc, ro) => {
+        const result = this.calcRO(ro);
+        acc.cpNet += result.cpNet;
+        acc.w += result.wSales;
+        acc.i += result.iSales;
+        acc.sublet += result.subletSales;
+        acc.hours += ro.hoursSold;
+        acc.commission += result.commission;
+        acc.total += result.total;
+        return acc;
+      },
+      { cpNet: 0, w: 0, i: 0, sublet: 0, hours: 0, commission: 0, total: 0 }
+    );
+  },
+
+  calcTierBonus(cpNet, eligible) {
+    if (!eligible) return { pct: 0, dollars: 0, tiersHit: [] };
+    let pct = 0;
+    const tiersHit = [];
+    for (const lvl of this.tierLevels) {
+      if (cpNet >= lvl.threshold) {
+        pct += lvl.addPct;
+        tiersHit.push(lvl.label);
+      }
+    }
+    return { pct, dollars: cpNet * pct, tiersHit };
+  },
+
+  calcObjectiveBonus(mode, base, checks, manualPct) {
+    let pct = 0;
+    if (mode === "manual") {
+      pct = Math.max(0, Math.min(0.01, manualPct));
+    } else {
+      Object.entries(checks).forEach(([key, val]) => {
+        if (val && this.objWeights[key]) pct += this.objWeights[key];
+      });
+      pct = Math.max(0, Math.min(0.01, pct));
+    }
+    return { pct, dollars: base * pct };
+  },
+
+  calcReviewBonus(count) {
+    return count >= 15 ? 375 : 0;
+  },
+
+  calcMonthlyBonus(monthly) {
+    const eligible =
+      monthly.tierEligible === "yes"
+        ? true
+        : monthly.tierEligible === "no"
+        ? false
+        : monthly.reviewsCount >= 7;
+
+    const tier = this.calcTierBonus(monthly.monthlyCpNet, eligible);
+    const obj = this.calcObjectiveBonus(
+      monthly.objMode,
+      monthly.objBase,
+      monthly.objChecks,
+      monthly.objManualPct
+    );
+    const review = this.calcReviewBonus(monthly.reviewsCount);
+
+    return {
+      tier,
+      obj,
+      review,
+      total: tier.dollars + obj.dollars + review,
+      eligible,
+    };
+  },
+};
+
+/* ============
+   CORE: STORAGE
+============ */
+const Storage = {
+  KEY: "hendrick_merriam_pay_v1",
+
+  save(state) {
+    localStorage.setItem(this.KEY, JSON.stringify(state));
+  },
+
+  load() {
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      if (!raw) return this.createDefaultState();
+      const parsed = JSON.parse(raw);
+      return {
+        ros: Array.isArray(parsed.ros) ? parsed.ros : [],
+        monthly: parsed.monthly || this.createDefaultMonthly(),
+        ui: parsed.ui || { activeTab: "commissions", periodFilter: "all" },
+      };
+    } catch (e) {
+      console.error("Storage load failed:", e);
+      return this.createDefaultState();
+    }
+  },
+
+  createDefaultState() {
+    return {
+      ros: [],
+      monthly: this.createDefaultMonthly(),
+      ui: { activeTab: "commissions", periodFilter: "all" },
+    };
+  },
+
+  createDefaultMonthly() {
+    return {
+      monthLabel: "",
+      monthlyCpNet: 0,
+      reviewsCount: 0,
+      tierEligible: "auto",
+      objBase: 0,
+      objMode: "weighted",
+      objManualPct: 0,
+      objChecks: {
+        align: false,
+        totLaborGross: false,
+        cpLaborGross: false,
+        hag: false,
+        cpGrossPerRo: false,
+        hoursPerCpro: false,
+      },
+    };
+  },
+
+  wipe() {
+    localStorage.removeItem(this.KEY);
+  },
+};
+
+/* ============
+   INDEXEDDB STORAGE
+============ */
+const IDBStorage = {
+  DB_NAME: 'JacePayDashboard',
+  DB_VERSION: 1,
+  db: null,
+
+  async init() {
+    if (this.db) return this.db;
+
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+
+      request.onerror = () => reject(request.error);
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+
+        // ROs store with indexes
+        if (!db.objectStoreNames.contains('ros')) {
+          const rosStore = db.createObjectStore('ros', { keyPath: 'id', autoIncrement: true });
+          rosStore.createIndex('roNumber', 'roNumber', { unique: false });
+          rosStore.createIndex('date', 'date', { unique: false });
+          rosStore.createIndex('period', 'period', { unique: false });
+        }
+
+        // Periods store
+        if (!db.objectStoreNames.contains('periods')) {
+          const periodsStore = db.createObjectStore('periods', { keyPath: 'id', autoIncrement: true });
+          periodsStore.createIndex('name', 'name', { unique: false });
+          periodsStore.createIndex('startDate', 'startDate', { unique: false });
+          periodsStore.createIndex('isCurrent', 'isCurrent', { unique: false });
+        }
+
+        // Monthly store
+        if (!db.objectStoreNames.contains('monthly')) {
+          db.createObjectStore('monthly', { keyPath: 'id' });
+        }
+
+        // Settings store
+        if (!db.objectStoreNames.contains('settings')) {
+          db.createObjectStore('settings', { keyPath: 'key' });
+        }
+      };
+
+      request.onsuccess = () => {
+        this.db = request.result;
+        resolve(this.db);
+      };
+    });
+  },
+
+  async add(storeName, data) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const request = store.add(data);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async put(storeName, data) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const request = store.put(data);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async get(storeName, key) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const request = store.get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async getAll(storeName) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async delete(storeName, key) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const request = store.delete(key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async clear(storeName) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const request = store.clear();
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async getByIndex(storeName, indexName, value) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const index = store.index(indexName);
+      const request = index.get(value);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async getAllByIndex(storeName, indexName, value) {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const index = store.index(indexName);
+      const request = index.getAll(value);
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
+  async getSetting(key) {
+    const result = await this.get('settings', key);
+    return result ? result.value : null;
+  },
+
+  async setSetting(key, value) {
+    return this.put('settings', { key, value });
+  },
+
+  async getCurrentPeriod() {
+    const periods = await this.getAll('periods');
+    return periods.find(p => p.isCurrent) || null;
+  },
+
+  async migrateFromLocalStorage() {
+    const OLD_KEY = Storage.KEY;
+    const raw = localStorage.getItem(OLD_KEY);
+
+    if (!raw) return false;
+
+    const migrated = await this.getSetting('migrated_from_localStorage');
+    if (migrated) return false;
+
+    try {
+      const oldData = JSON.parse(raw);
+
+      // Create default current period
+      const periodId = await this.add('periods', {
+        name: 'Migrated Period',
+        startDate: new Date().toISOString(),
+        endDate: null,
+        isCurrent: true,
+        aggregates: null
+      });
+
+      // Migrate ROs with period reference
+      for (const ro of (oldData.ros || [])) {
+        await this.add('ros', {
+          ...ro,
+          period: periodId,
+          createdAt: ro.timestamp || Date.now(),
+          updatedAt: Date.now()
+        });
+      }
+
+      // Migrate monthly data
+      if (oldData.monthly) {
+        const monthId = oldData.monthly.monthLabel || 'current';
+        await this.put('monthly', { id: monthId, ...oldData.monthly });
+      }
+
+      // Migrate UI settings
+      if (oldData.ui) {
+        await this.setSetting('ui', oldData.ui);
+      }
+
+      // Mark migration complete
+      await this.setSetting('migrated_from_localStorage', true);
+      await this.setSetting('migration_date', new Date().toISOString());
+
+      console.log('Migration from localStorage complete');
+      return true;
+    } catch (e) {
+      console.error('Migration failed:', e);
+      return false;
+    }
+  },
+
+  async loadState() {
+    const [ros, periods, monthlyList, uiSetting] = await Promise.all([
+      this.getAll('ros'),
+      this.getAll('periods'),
+      this.getAll('monthly'),
+      this.getSetting('ui')
+    ]);
+
+    const currentPeriod = periods.find(p => p.isCurrent) || null;
+    const currentROs = currentPeriod
+      ? ros.filter(r => r.period === currentPeriod.id)
+      : ros;
+
+    return {
+      ros: currentROs,
+      allROs: ros,
+      periods,
+      currentPeriod,
+      monthly: monthlyList[0] || Storage.createDefaultMonthly(),
+      ui: uiSetting || { activeTab: 'commissions', periodFilter: 'all' }
+    };
+  },
+
+  async saveRO(ro) {
+    const currentPeriod = await this.getCurrentPeriod();
+    const roWithMeta = {
+      ...ro,
+      period: currentPeriod ? currentPeriod.id : null,
+      createdAt: ro.createdAt || Date.now(),
+      updatedAt: Date.now()
+    };
+
+    if (ro.id) {
+      await this.put('ros', roWithMeta);
+      return ro.id;
+    } else {
+      return await this.add('ros', roWithMeta);
+    }
+  },
+
+  async deleteRO(id) {
+    return this.delete('ros', id);
+  },
+
+  async saveMonthly(monthly) {
+    const monthId = monthly.monthLabel || 'current';
+    return this.put('monthly', { id: monthId, ...monthly });
+  },
+
+  async createPeriod(name, startDate) {
+    // Close current period
+    const current = await this.getCurrentPeriod();
+    if (current) {
+      current.isCurrent = false;
+      current.endDate = new Date().toISOString();
+      const ros = await this.getAllByIndex('ros', 'period', current.id);
+      current.aggregates = Calculator.calcPeriodTotals(ros);
+      await this.put('periods', current);
+    }
+
+    // Create new period
+    return this.add('periods', {
+      name,
+      startDate,
+      endDate: null,
+      isCurrent: true,
+      aggregates: null
+    });
+  },
+
+  async wipeROs() {
+    return this.clear('ros');
+  },
+
+  async wipeAll() {
+    await Promise.all([
+      this.clear('ros'),
+      this.clear('periods'),
+      this.clear('monthly'),
+      this.clear('settings')
+    ]);
+  }
+};
+
+/* ============
+   STATE MANAGEMENT
+============ */
+const StateManager = {
+  state: null,
+  listeners: [],
+  useIDB: false,
+  initialized: false,
+
+  async init() {
+    // Try IndexedDB first
+    if (window.indexedDB) {
+      try {
+        await IDBStorage.init();
+        await IDBStorage.migrateFromLocalStorage();
+        this.state = await IDBStorage.loadState();
+        this.useIDB = true;
+        this.initialized = true;
+        console.log('Using IndexedDB storage');
+        return;
+      } catch (e) {
+        console.warn('IndexedDB failed, falling back to localStorage:', e);
+      }
+    }
+
+    // Fallback to localStorage
+    this.state = Storage.load();
+    this.useIDB = false;
+    this.initialized = true;
+    console.log('Using localStorage storage');
+  },
+
+  get() {
+    return this.state || Storage.load();
+  },
+
+  async update(updater) {
+    this.state = updater(this.state);
+
+    if (this.useIDB) {
+      // Persist to localStorage as backup
+      Storage.save(this.state);
+    } else {
+      Storage.save(this.state);
+    }
+
+    this.notify();
+  },
+
+  async addRO(ro) {
+    if (this.useIDB) {
+      const id = await IDBStorage.saveRO(ro);
+      ro.id = id;
+    }
+    this.state = {
+      ...this.state,
+      ros: [...this.state.ros, ro]
+    };
+    Storage.save(this.state);
+    this.notify();
+  },
+
+  async removeRO(idx) {
+    const ro = this.state.ros[idx];
+    if (this.useIDB && ro && ro.id) {
+      await IDBStorage.deleteRO(ro.id);
+    }
+    this.state = {
+      ...this.state,
+      ros: this.state.ros.filter((_, i) => i !== idx)
+    };
+    Storage.save(this.state);
+    this.notify();
+  },
+
+  async saveMonthly(monthly) {
+    if (this.useIDB) {
+      await IDBStorage.saveMonthly(monthly);
+    }
+    this.state = { ...this.state, monthly };
+    Storage.save(this.state);
+    this.notify();
+  },
+
+  async wipeROs() {
+    if (this.useIDB) {
+      await IDBStorage.wipeROs();
+    }
+    this.state = { ...this.state, ros: [] };
+    Storage.save(this.state);
+    this.notify();
+  },
+
+  async wipeAll() {
+    if (this.useIDB) {
+      await IDBStorage.wipeAll();
+    }
+    Storage.wipe();
+    this.state = Storage.createDefaultState();
+    this.notify();
+  },
+
+  subscribe(callback) {
+    this.listeners.push(callback);
+    return () => {
+      this.listeners = this.listeners.filter((l) => l !== callback);
+    };
+  },
+
+  notify() {
+    this.listeners.forEach((cb) => cb(this.state));
+  },
+};
+
+/* ============
+   DATE HELPERS
+============ */
+const DateHelpers = {
+  today() {
+    return new Date().toISOString().split('T')[0];
+  },
+
+  isToday(dateStr) {
+    return dateStr === this.today();
+  },
+
+  isThisWeek(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    return date >= weekStart;
+  },
+
+  filterByPeriod(ros, period) {
+    if (period === 'today') {
+      return ros.filter(ro => this.isToday(ro.date));
+    }
+    if (period === 'week') {
+      return ros.filter(ro => this.isThisWeek(ro.date));
+    }
+    return ros;
+  }
+};
+
+/* ============
+   UI COMPONENTS
+============ */
+const UI = {
+  currentPeriod: 'all',
+
+  money(n) {
+    return Number(n || 0).toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  },
+
+  moneyExact(n) {
+    return Number(n || 0).toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+    });
+  },
+
+  pct(n) {
+    return (Number(n || 0) * 100).toFixed(1) + "%";
+  },
+
+  escape(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  },
+
+  renderTodayStats(ros) {
+    const todayROs = ros.filter(ro => DateHelpers.isToday(ro.date));
+    const todayTotals = Calculator.calcPeriodTotals(todayROs);
+    const periodTotals = Calculator.calcPeriodTotals(ros);
+
+    document.getElementById('todayROs').textContent = todayROs.length;
+    document.getElementById('todaySales').textContent = this.money(todayTotals.total);
+    document.getElementById('todayComm').textContent = this.money(todayTotals.commission);
+    document.getElementById('periodComm').textContent = this.money(periodTotals.commission);
+  },
+
+  renderGoalProgress(cpNet) {
+    const goal = Calculator.biWeeklyGoal;
+    const pct = Math.min(100, (cpNet / goal) * 100);
+
+    document.getElementById('goalFill').style.width = pct + '%';
+    document.getElementById('goalText').textContent = `${this.money(cpNet)} / ${this.money(goal)}`;
+    document.getElementById('goalPctText').textContent = pct.toFixed(0) + '%';
+  },
+
+  renderROTable(ros) {
+    const filteredROs = DateHelpers.filterByPeriod(ros, this.currentPeriod);
+    const tbody = document.querySelector("#roTable tbody");
+
+    // Sort by date descending, then by timestamp
+    const sorted = [...filteredROs].sort((a, b) => {
+      if (a.date !== b.date) return b.date.localeCompare(a.date);
+      return (b.timestamp || 0) - (a.timestamp || 0);
+    });
+
+    tbody.innerHTML = sorted
+      .map((ro) => {
+        const idx = ros.indexOf(ro);
+        const result = Calculator.calcRO(ro);
+        const type = Models.getROType(ro);
+        const typeLabel = { cp: 'CP', warranty: 'W', internal: 'INT', mixed: 'MIX' }[type];
+        const dateDisplay = DateHelpers.isToday(ro.date) ? 'Today' : ro.date;
+
+        return `
+        <tr data-idx="${idx}">
+          <td>${this.escape(dateDisplay)}</td>
+          <td><strong>${this.escape(ro.roNumber)}</strong></td>
+          <td><span class="ro-type ${type}">${typeLabel}</span></td>
+          <td class="right">${this.money(result.total)}</td>
+          <td class="right"><strong>${this.moneyExact(result.commission)}</strong></td>
+          <td class="right"><button class="btn bad" data-remove="${idx}" style="padding:4px 8px;">×</button></td>
+        </tr>
+      `;
+      })
+      .join("");
+
+    if (sorted.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">No ROs for this period</td></tr>`;
+    }
+
+    tbody.querySelectorAll("button[data-remove]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        Events.removeRO(Number(btn.dataset.remove));
+      });
+    });
+  },
+
+  renderCommissionSummary(ros) {
+    const totals = Calculator.calcPeriodTotals(ros);
+
+    document.getElementById("kpiCpNet").textContent = this.money(totals.cpNet);
+    document.getElementById("kpiW").textContent = this.money(totals.w);
+    document.getElementById("kpiI").textContent = this.money(totals.i);
+    document.getElementById("kpiSublet").textContent = this.money(totals.sublet);
+    document.getElementById("kpiHours").textContent = totals.hours.toFixed(1);
+    document.getElementById("kpiCommission").textContent = this.moneyExact(totals.commission);
+
+    this.renderGoalProgress(totals.cpNet);
+    this.renderTodayStats(ros);
+
+    const cpComm = totals.cpNet * Calculator.rates.cp;
+    const wComm = totals.w * Calculator.rates.w;
+    const iComm = totals.i * Calculator.rates.i;
+    const subComm = totals.sublet * Calculator.rates.sublet;
+
+    const breakdown = [
+      ["CP (7%)", cpComm, totals.cpNet],
+      ["Warranty (5%)", wComm, totals.w],
+      ["Internal (5%)", iComm, totals.i],
+      ["Sublet (0.5%)", subComm, totals.sublet],
+    ];
+
+    const lines = breakdown
+      .filter(([, , sales]) => sales > 0)
+      .map(([name, comm, sales]) => {
+        return `• <b>${name}</b>: ${this.moneyExact(comm)}`;
+      })
+      .join("<br>");
+
+    document.getElementById("breakdownText").innerHTML =
+      lines || "<span class='muted'>Add ROs to see breakdown</span>";
+
+    const avgPerRO = ros.length ? totals.commission / ros.length : 0;
+    const avgPerHour = totals.hours > 0 ? totals.commission / totals.hours : 0;
+    const avgSalesPerRO = ros.length ? totals.total / ros.length : 0;
+
+    document.getElementById("roiText").innerHTML = `
+      • ROs entered: <b>${ros.length}</b><br>
+      • Avg commission/RO: <b>${this.moneyExact(avgPerRO)}</b><br>
+      • Avg sales/RO: <b>${this.money(avgSalesPerRO)}</b><br>
+      • Commission/hour: <b>${totals.hours > 0 ? this.moneyExact(avgPerHour) : "—"}</b>
+    `;
+  },
+
+  renderMonthly(monthly) {
+    const bonus = Calculator.calcMonthlyBonus(monthly);
+
+    document.getElementById("kpiTierPct").textContent = this.pct(bonus.tier.pct);
+    document.getElementById("kpiTierDollars").textContent = this.moneyExact(bonus.tier.dollars);
+    document.getElementById("kpiObjPct").textContent = this.pct(bonus.obj.pct);
+    document.getElementById("kpiObjDollars").textContent = this.moneyExact(bonus.obj.dollars);
+    document.getElementById("kpiReviewBonus").textContent = this.moneyExact(bonus.review);
+    document.getElementById("kpiTotalMonthly").textContent = this.moneyExact(bonus.total);
+
+    const tierPill = bonus.eligible
+      ? `<span class="pill"><span class="dot good"></span>Tier eligible</span>`
+      : `<span class="pill"><span class="dot bad"></span>Need 7+ reviews for tier</span>`;
+
+    const reviewPill =
+      bonus.review > 0
+        ? `<span class="pill"><span class="dot good"></span>$375 review bonus earned!</span>`
+        : `<span class="pill"><span class="dot warn"></span>Reviews: ${monthly.reviewsCount}/15 for $375</span>`;
+
+    document.getElementById("monthlyStatus").innerHTML = `
+      <div class="flex" style="margin-bottom:10px">${tierPill}${reviewPill}</div>
+      • CP Net: <b>${this.money(monthly.monthlyCpNet)}</b><br>
+      • Objective Base: <b>${this.money(monthly.objBase)}</b>
+    `;
+
+    // Tier breakdown
+    const tierHtml = Calculator.tierLevels.map(lvl => {
+      const hit = monthly.monthlyCpNet >= lvl.threshold && bonus.eligible;
+      const icon = hit ? '✓' : '○';
+      const style = hit ? 'color:var(--good)' : 'color:var(--muted)';
+      return `<div style="${style}">${icon} ${lvl.label} (+0.5%)</div>`;
+    }).join('');
+
+    document.getElementById("tierBreakdown").innerHTML = tierHtml || 'Hit tier levels to earn bonus %';
+  },
+};
+
+/* ============
+   EVENT HANDLERS
+============ */
+const Events = {
+  async addRO() {
+    const data = {
+      roNumber: document.getElementById("roNumber").value,
+      date: document.getElementById("roDate").value || DateHelpers.today(),
+      customer: document.getElementById("customerName").value,
+      cpLabor: document.getElementById("cpLabor").value,
+      cpParts: document.getElementById("cpParts").value,
+      wLabor: document.getElementById("wLabor").value,
+      wParts: document.getElementById("wParts").value,
+      iLabor: document.getElementById("iLabor").value,
+      iParts: document.getElementById("iParts").value,
+      subletLabor: document.getElementById("subletLabor").value,
+      discounts: document.getElementById("discounts").value,
+      hoursSold: document.getElementById("hoursSold").value,
+    };
+
+    const ro = Models.createRO(data);
+    const errors = Models.validateRO(ro);
+
+    if (errors.length) {
+      alert("Please enter an RO number");
+      document.getElementById("roNumber").focus();
+      return;
+    }
+
+    await StateManager.addRO(ro);
+
+    this.clearROForm();
+    document.getElementById("roNumber").focus();
+  },
+
+  applyQuickService(serviceId) {
+    const service = QuickServices[serviceId];
+    if (!service) return;
+
+    const cpLaborEl = document.getElementById("cpLabor");
+    const cpPartsEl = document.getElementById("cpParts");
+    const hoursEl = document.getElementById("hoursSold");
+
+    cpLaborEl.value = (Number(cpLaborEl.value) || 0) + service.cpLabor;
+    cpPartsEl.value = (Number(cpPartsEl.value) || 0) + service.cpParts;
+    hoursEl.value = (Number(hoursEl.value) || 0) + service.hours;
+  },
+
+  async removeRO(idx) {
+    await StateManager.removeRO(idx);
+  },
+
+  clearROForm() {
+    ["roNumber", "customerName"].forEach((id) => {
+      document.getElementById(id).value = "";
+    });
+    ["cpLabor", "cpParts", "wLabor", "wParts", "iLabor", "iParts", "subletLabor", "discounts", "hoursSold"].forEach((id) => {
+      document.getElementById(id).value = 0;
+    });
+    document.getElementById("roDate").value = DateHelpers.today();
+  },
+
+  async wipeCommissions() {
+    if (!confirm("Clear all RO data for this pay period?")) return;
+    await StateManager.wipeROs();
+  },
+
+  exportData() {
+    const state = StateManager.get();
+    const dataStr = JSON.stringify(state, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().split('T')[0];
+    link.download = `hendrick-merriam-pay-${timestamp}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  },
+
+  importData() {
+    document.getElementById("importFile").click();
+  },
+
+  handleFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+
+        if (!imported.ros || !Array.isArray(imported.ros)) {
+          alert("Invalid file format: missing RO data");
+          return;
+        }
+
+        if (confirm("This will replace all current data. Continue?")) {
+          StateManager.update(() => ({
+            ros: imported.ros || [],
+            monthly: imported.monthly || Storage.createDefaultMonthly(),
+            ui: imported.ui || { activeTab: "commissions", periodFilter: "all" },
+          }));
+          alert("Data imported successfully!");
+        }
+      } catch (err) {
+        alert("Failed to import: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  },
+
+  async saveMonthly() {
+    const monthly = {
+      monthLabel: document.getElementById("monthLabel").value,
+      monthlyCpNet: Number(document.getElementById("monthlyCpNet").value) || 0,
+      reviewsCount: Number(document.getElementById("reviewsCount").value) || 0,
+      tierEligible: document.getElementById("tierEligible").value,
+      objBase: Number(document.getElementById("objBase").value) || 0,
+      objMode: document.getElementById("objMode").value,
+      objManualPct: Number(document.getElementById("objManualPct").value) || 0,
+      objChecks: {
+        align: document.getElementById("objAlign").checked,
+        totLaborGross: document.getElementById("objTotLaborGross").checked,
+        cpLaborGross: document.getElementById("objCpLaborGross").checked,
+        hag: document.getElementById("objHag").checked,
+        cpGrossPerRo: document.getElementById("objCpGrossPerRo").checked,
+        hoursPerCpro: document.getElementById("objHoursPerCpro").checked,
+      },
+    };
+
+    await StateManager.saveMonthly(monthly);
+    alert("Monthly inputs saved!");
+  },
+
+  async resetMonthly() {
+    if (!confirm("Reset monthly inputs?")) return;
+    await StateManager.saveMonthly(Storage.createDefaultMonthly());
+    this.hydrateMonthlyInputs();
+  },
+
+  async wipeAll() {
+    if (!confirm("This will delete ALL data. Are you sure?")) return;
+    await StateManager.wipeAll();
+    this.clearROForm();
+  },
+
+  hydrateMonthlyInputs() {
+    const m = StateManager.get().monthly;
+    document.getElementById("monthLabel").value = m.monthLabel || "";
+    document.getElementById("monthlyCpNet").value = m.monthlyCpNet || 0;
+    document.getElementById("reviewsCount").value = m.reviewsCount || 0;
+    document.getElementById("tierEligible").value = m.tierEligible || "auto";
+    document.getElementById("objBase").value = m.objBase || 0;
+    document.getElementById("objMode").value = m.objMode || "weighted";
+    document.getElementById("objManualPct").value = m.objManualPct || 0;
+
+    const c = m.objChecks || {};
+    document.getElementById("objAlign").checked = !!c.align;
+    document.getElementById("objTotLaborGross").checked = !!c.totLaborGross;
+    document.getElementById("objCpLaborGross").checked = !!c.cpLaborGross;
+    document.getElementById("objHag").checked = !!c.hag;
+    document.getElementById("objCpGrossPerRo").checked = !!c.cpGrossPerRo;
+    document.getElementById("objHoursPerCpro").checked = !!c.hoursPerCpro;
+
+    this.updateObjModeUI();
+  },
+
+  updateObjModeUI() {
+    const mode = document.getElementById("objMode").value;
+    document.getElementById("objWeighted").classList.toggle("hide", mode !== "weighted");
+    document.getElementById("objManual").classList.toggle("hide", mode !== "manual");
+  },
+
+  setPeriodFilter(period) {
+    UI.currentPeriod = period;
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.period === period);
+    });
+    UI.renderROTable(StateManager.get().ros);
+  },
+
+  async createNewPeriod() {
+    const name = prompt('Enter a name for the new pay period (e.g., "Jan 1-15, 2026"):');
+    if (!name) return;
+
+    if (!StateManager.useIDB) {
+      alert('Period management requires IndexedDB storage');
+      return;
+    }
+
+    try {
+      await IDBStorage.createPeriod(name, new Date().toISOString());
+      // Reload state to get updated periods
+      StateManager.state = await IDBStorage.loadState();
+      StateManager.notify();
+      this.renderPeriodSelector();
+      alert('New period created! ROs will now be added to this period.');
+    } catch (e) {
+      console.error('Failed to create period:', e);
+      alert('Failed to create new period');
+    }
+  },
+
+  async closePeriod() {
+    if (!StateManager.useIDB) {
+      alert('Period management requires IndexedDB storage');
+      return;
+    }
+
+    const currentPeriod = await IDBStorage.getCurrentPeriod();
+    if (!currentPeriod) {
+      alert('No active period to close');
+      return;
+    }
+
+    if (!confirm(`Close period "${currentPeriod.name}"? This will calculate and store the final totals.`)) {
+      return;
+    }
+
+    try {
+      // Close current period and calculate aggregates
+      const ros = await IDBStorage.getAllByIndex('ros', 'period', currentPeriod.id);
+      currentPeriod.isCurrent = false;
+      currentPeriod.endDate = new Date().toISOString();
+      currentPeriod.aggregates = Calculator.calcPeriodTotals(ros);
+      await IDBStorage.put('periods', currentPeriod);
+
+      // Reload state
+      StateManager.state = await IDBStorage.loadState();
+      StateManager.notify();
+      this.renderPeriodSelector();
+      alert('Period closed successfully!');
+    } catch (e) {
+      console.error('Failed to close period:', e);
+      alert('Failed to close period');
+    }
+  },
+
+  async switchPeriod(periodId) {
+    if (!StateManager.useIDB) return;
+
+    try {
+      if (periodId === 'all') {
+        // Show all ROs
+        const allROs = await IDBStorage.getAll('ros');
+        StateManager.state = { ...StateManager.state, ros: allROs };
+      } else {
+        const ros = await IDBStorage.getAllByIndex('ros', 'period', Number(periodId));
+        StateManager.state = { ...StateManager.state, ros };
+      }
+      StateManager.notify();
+    } catch (e) {
+      console.error('Failed to switch period:', e);
+    }
+  },
+
+  async renderPeriodSelector() {
+    const select = document.getElementById('periodSelect');
+    const infoEl = document.getElementById('periodInfo');
+    if (!select) return;
+
+    if (!StateManager.useIDB) {
+      select.innerHTML = '<option value="current">Current Period (localStorage)</option>';
+      infoEl.textContent = 'Using localStorage - IndexedDB not available';
+      return;
+    }
+
+    try {
+      const periods = await IDBStorage.getAll('periods');
+      const currentPeriod = periods.find(p => p.isCurrent);
+
+      // Build options
+      let options = '<option value="all">All Periods</option>';
+      periods.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      for (const period of periods) {
+        const selected = currentPeriod && period.id === currentPeriod.id ? 'selected' : '';
+        const status = period.isCurrent ? ' (Active)' : '';
+        options += `<option value="${period.id}" ${selected}>${period.name}${status}</option>`;
+      }
+      select.innerHTML = options;
+
+      // Show period info
+      if (currentPeriod) {
+        const startDate = new Date(currentPeriod.startDate).toLocaleDateString();
+        infoEl.textContent = `Active period started: ${startDate}`;
+      } else {
+        infoEl.textContent = 'No active period - click "New Period" to start tracking';
+      }
+    } catch (e) {
+      console.error('Failed to render period selector:', e);
+      select.innerHTML = '<option value="current">Current Period</option>';
+    }
+  }
+};
+
+/* ============
+   TABS
+============ */
+const tabDefs = [
+  { id: "commissions", label: "Bi-Weekly Pay" },
+  { id: "bonuses", label: "Monthly Bonuses" },
+];
+
+const tabsEl = document.getElementById("tabs");
+tabDefs.forEach((t) => {
+  const b = document.createElement("button");
+  b.className = "tab";
+  b.textContent = t.label;
+  b.dataset.target = t.id;
+  b.addEventListener("click", () => showTab(t.id));
+  tabsEl.appendChild(b);
+});
+
+function showTab(id) {
+  document.querySelectorAll(".tabPage").forEach((p) => {
+    p.classList.toggle("hide", p.dataset.page !== id);
+  });
+  document.querySelectorAll(".tab").forEach((b) => {
+    b.classList.toggle("active", b.dataset.target === id);
+  });
+
+  if (id === "bonuses") {
+    Events.hydrateMonthlyInputs();
+  }
+}
+
+/* ============
+   KEYBOARD SHORTCUTS
+============ */
+document.addEventListener('keydown', (e) => {
+  // Enter to add RO when in RO number field
+  if (e.key === 'Enter' && document.activeElement.id === 'roNumber') {
+    e.preventDefault();
+    Events.addRO();
+  }
+});
+
+/* ============
+   INIT
+============ */
+async function init() {
+  // Show loading state
+  document.body.style.opacity = '0.5';
+  document.body.style.pointerEvents = 'none';
+
+  try {
+    // Initialize storage (IndexedDB with localStorage fallback)
+    await StateManager.init();
+  } catch (e) {
+    console.error('Storage initialization failed:', e);
+  }
+
+  // Remove loading state
+  document.body.style.opacity = '1';
+  document.body.style.pointerEvents = 'auto';
+
+  // Set today's date as default
+  document.getElementById("roDate").value = DateHelpers.today();
+
+  // Wire up event handlers
+  document.getElementById("addRO").addEventListener("click", () => Events.addRO());
+  document.getElementById("clearRO").addEventListener("click", () => Events.clearROForm());
+  document.getElementById("wipeCommissions").addEventListener("click", () => Events.wipeCommissions());
+  document.getElementById("exportData").addEventListener("click", () => Events.exportData());
+  document.getElementById("importData").addEventListener("click", () => Events.importData());
+  document.getElementById("importFile").addEventListener("change", (e) => Events.handleFileImport(e));
+  document.getElementById("saveMonthly").addEventListener("click", () => Events.saveMonthly());
+  document.getElementById("resetMonthly").addEventListener("click", () => Events.resetMonthly());
+  document.getElementById("wipeAll").addEventListener("click", () => Events.wipeAll());
+
+  // Quick service buttons
+  document.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Events.applyQuickService(btn.dataset.service);
+    });
+  });
+
+  // Period filter buttons
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      Events.setPeriodFilter(btn.dataset.period);
+    });
+  });
+
+  // Period management
+  document.getElementById("newPeriod").addEventListener("click", () => Events.createNewPeriod());
+  document.getElementById("closePeriod").addEventListener("click", () => Events.closePeriod());
+  document.getElementById("periodSelect").addEventListener("change", (e) => Events.switchPeriod(e.target.value));
+
+  // Render period selector
+  Events.renderPeriodSelector();
+
+  // Obj mode toggle
+  document.getElementById("objMode").addEventListener("change", () => {
+    Events.updateObjModeUI();
+    UI.renderMonthly(StateManager.get().monthly);
+  });
+
+  // Live updates for monthly
+  ["monthLabel", "monthlyCpNet", "reviewsCount", "tierEligible", "objBase", "objManualPct"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", () => {
+      UI.renderMonthly(StateManager.get().monthly);
+    });
+  });
+
+  ["objAlign", "objTotLaborGross", "objCpLaborGross", "objHag", "objCpGrossPerRo", "objHoursPerCpro"].forEach((id) => {
+    document.getElementById(id).addEventListener("change", () => {
+      UI.renderMonthly(StateManager.get().monthly);
+    });
+  });
+
+  // Subscribe to state changes
+  StateManager.subscribe((state) => {
+    UI.renderROTable(state.ros);
+    UI.renderCommissionSummary(state.ros);
+    UI.renderMonthly(state.monthly);
+  });
+
+  // Initial render
+  const state = StateManager.get();
+  UI.renderROTable(state.ros);
+  UI.renderCommissionSummary(state.ros);
+  UI.renderMonthly(state.monthly);
+  showTab("commissions");
+
+  // Register Service Worker for offline support
+  if ('serviceWorker' in navigator) {
+    try {
+      await navigator.serviceWorker.register('/sw.js');
+      console.log('Service Worker registered');
+    } catch (e) {
+      console.log('Service Worker registration failed:', e);
+    }
+  }
+}
+
+init();
+</script>
+</body>
+</html>
