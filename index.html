@@ -63,15 +63,6 @@
     .kpi .d{font-size:11px; color:var(--muted); margin-top:6px;}
     .kpi.highlight{border-color:var(--good); background:rgba(45,212,191,.08);}
     .kpi.highlight .v{color:var(--good);}
-    table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--border);}
-    th, td{padding:9px 8px; border-bottom:1px solid var(--border); font-size:12px; text-align:left;}
-    th{background:#0f1723; color:#cfe0f7; font-weight:600;}
-    tr:hover td{background:rgba(74,163,255,.06);}
-    .right{text-align:right}
-    .pill{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px;
-      border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--muted);}
-    .dot{width:8px; height:8px; border-radius:99px; background:var(--muted);}
-    .dot.good{background:var(--good);} .dot.warn{background:var(--warn);} .dot.bad{background:var(--bad);}
     .flex{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .spacer{height:8px}
     .spacer-lg{height:16px}
@@ -83,43 +74,15 @@
     .dangerNote{border-left:3px solid rgba(251,113,133,.75); padding-left:10px;}
     .goodNote{border-left:3px solid rgba(45,212,191,.75); padding-left:10px;}
 
-    /* Quick Service Buttons */
-    .quick-services{display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:8px; margin-bottom:12px;}
-    .quick-btn{
-      background:rgba(74,163,255,.08); border:1px solid rgba(74,163,255,.3);
-      color:var(--accent); padding:10px 8px; border-radius:10px; cursor:pointer;
-      font-size:11px; text-align:center; transition: all 0.15s;
-    }
-    .quick-btn:hover{background:rgba(74,163,255,.15); border-color:rgba(74,163,255,.5);}
-    .quick-btn .price{font-size:13px; font-weight:600; display:block; margin-top:2px;}
-
     /* Goals Progress */
     .goal-bar{background:#0b1220; border-radius:8px; height:24px; overflow:hidden; position:relative; border:1px solid var(--border);}
     .goal-fill{height:100%; background:linear-gradient(90deg, var(--good), var(--accent)); transition: width 0.4s ease;}
     .goal-text{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:11px; font-weight:600; color:white; text-shadow:0 1px 2px rgba(0,0,0,.5);}
 
-    /* Today's Stats Banner */
-    .today-banner{background:linear-gradient(135deg, rgba(74,163,255,.1), rgba(45,212,191,.1)); border:1px solid rgba(74,163,255,.3); border-radius:12px; padding:14px; margin-bottom:14px;}
-    .today-banner h3{margin:0 0 10px 0; font-size:13px; color:var(--accent);}
-    .today-stats{display:flex; gap:20px; flex-wrap:wrap;}
-    .today-stat{text-align:center;}
-    .today-stat .val{font-size:22px; font-weight:700; font-family:var(--mono);}
-    .today-stat .lbl{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
-
-    /* Keyboard hint */
-    .kbd{background:#1a2332; border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:10px; font-family:var(--mono); color:var(--muted);}
-
-    /* RO type indicator */
-    .ro-type{display:inline-block; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase;}
-    .ro-type.cp{background:rgba(74,163,255,.2); color:var(--accent);}
-    .ro-type.warranty{background:rgba(251,191,36,.2); color:var(--warn);}
-    .ro-type.internal{background:rgba(156,163,175,.2); color:#9ca3af;}
-    .ro-type.mixed{background:rgba(45,212,191,.2); color:var(--good);}
-
-    /* Period selector */
-    .period-selector{display:flex; gap:6px; margin-bottom:12px;}
-    .period-btn{background:var(--chip); border:1px solid var(--border); color:var(--muted); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;}
-    .period-btn.active{background:rgba(74,163,255,.12); border-color:var(--accent); color:var(--accent);}
+    /* Month selector */
+    .month-selector{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;}
+    .month-btn{background:var(--chip); border:1px solid var(--border); color:var(--muted); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;}
+    .month-btn.active{background:rgba(74,163,255,.12); border-color:var(--accent); color:var(--accent);}
   </style>
 </head>
 
@@ -129,7 +92,7 @@
     <div class="header-row">
       <div>
         <h1>Jace Pay Calculator</h1>
-        <div class="sub">Service Advisor Commission Tracker</div>
+        <div class="sub">Monthly Commission Calculator</div>
       </div>
       <span class="dealer-badge">HENDRICK TOYOTA MERRIAM</span>
     </div>
@@ -138,59 +101,25 @@
 </header>
 
 <main class="wrap">
-  <!-- TAB: BI-WEEKLY COMMISSIONS -->
+  <!-- TAB: MONTHLY COMMISSIONS -->
   <section class="tabPage" data-page="commissions">
     <div class="grid">
       <div class="card">
-        <!-- Today's Quick Stats -->
-        <div class="today-banner">
-          <h3>Today's Progress</h3>
-          <div class="today-stats">
-            <div class="today-stat">
-              <div class="val" id="todayROs">0</div>
-              <div class="lbl">ROs Today</div>
-            </div>
-            <div class="today-stat">
-              <div class="val" id="todaySales">$0</div>
-              <div class="lbl">Sales Today</div>
-            </div>
-            <div class="today-stat">
-              <div class="val" id="todayComm">$0</div>
-              <div class="lbl">Commission</div>
-            </div>
-            <div class="today-stat">
-              <div class="val" id="periodComm">$0</div>
-              <div class="lbl">This Period</div>
-            </div>
-          </div>
-        </div>
-
-        <h2>Quick Service Entry <span class="kbd">Tab</span> to navigate</h2>
-
-        <!-- Quick Service Buttons -->
-        <div class="quick-services">
-          <button class="quick-btn" data-service="lof">LOF<span class="price">$89.95</span></button>
-          <button class="quick-btn" data-service="synth">Synthetic LOF<span class="price">$109.95</span></button>
-          <button class="quick-btn" data-service="rotate">Tire Rotate<span class="price">$24.95</span></button>
-          <button class="quick-btn" data-service="brake-inspect">Brake Inspect<span class="price">$0</span></button>
-          <button class="quick-btn" data-service="alignment">Alignment<span class="price">$129.95</span></button>
-          <button class="quick-btn" data-service="diag">Diagnostic<span class="price">$189.95</span></button>
-          <button class="quick-btn" data-service="brakes">Brake Pads<span class="price">$349.95</span></button>
-          <button class="quick-btn" data-service="trans">Trans Service<span class="price">$249.95</span></button>
-        </div>
-
+        <h2>Select Month</h2>
         <div class="row">
           <div>
-            <label>RO # <span class="kbd">Enter</span> to add</label>
-            <input id="roNumber" placeholder="e.g., 123456" autocomplete="off" inputmode="numeric" />
+            <label>Month</label>
+            <input id="currentMonth" type="month" />
           </div>
-          <div>
-            <label>Date</label>
-            <input id="roDate" type="date" />
+          <div class="flex" style="align-items:flex-end;">
+            <button class="btn primary" id="loadMonth">Load Month</button>
+            <button class="btn" id="newMonth">New Month</button>
           </div>
         </div>
 
-        <div class="spacer"></div>
+        <div class="spacer-lg"></div>
+
+        <h2>Monthly Sales Totals</h2>
 
         <div class="row">
           <div>
@@ -249,18 +178,14 @@
             <label>Hours Sold</label>
             <input id="hoursSold" type="number" min="0" step="0.1" value="0" inputmode="decimal" />
           </div>
-          <div>
-            <label>Customer Name (optional)</label>
-            <input id="customerName" placeholder="optional" />
-          </div>
         </div>
 
         <div class="spacer"></div>
 
         <div class="flex">
-          <button class="btn primary large" id="addRO">Add RO</button>
-          <button class="btn" id="clearRO">Clear</button>
-          <span class="pill"><span class="dot good"></span>Autosaves</span>
+          <button class="btn primary large" id="saveMonth">Save Month</button>
+          <button class="btn" id="clearMonth">Clear</button>
+          <span class="pill" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--muted);"><span class="dot good" style="width:8px; height:8px; border-radius:99px; background:var(--good);"></span>Autosaves</span>
         </div>
 
         <div class="spacer"></div>
@@ -271,87 +196,40 @@
 
         <div class="spacer-lg"></div>
 
-        <!-- Period Management -->
-        <div class="card" style="padding:12px; margin-bottom:12px; background:rgba(74,163,255,.05); border-color:rgba(74,163,255,.2);">
-          <div class="flex" style="justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div class="flex" style="align-items:center; gap:8px;">
-              <label style="margin:0; font-size:12px;">Pay Period:</label>
-              <select id="periodSelect" class="btn" style="min-width:180px;">
-                <option value="current">Current Period</option>
-              </select>
-            </div>
-            <div class="flex" style="gap:6px;">
-              <button class="btn primary" id="newPeriod">New Period</button>
-              <button class="btn warn" id="closePeriod">Close Period</button>
-            </div>
-          </div>
-          <div id="periodInfo" class="small" style="margin-top:8px; color:var(--muted);"></div>
-        </div>
-
-        <!-- Period Filter -->
-        <div class="flex" style="justify-content:space-between; align-items:center;">
-          <h2 style="margin:0;">RO History</h2>
-          <div class="period-selector">
-            <button class="period-btn active" data-period="all">All</button>
-            <button class="period-btn" data-period="today">Today</button>
-            <button class="period-btn" data-period="week">This Week</button>
-          </div>
-        </div>
-
-        <div class="spacer"></div>
-
-        <div style="overflow:auto; max-height:400px;">
-          <table id="roTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>RO#</th>
-                <th>Type</th>
-                <th class="right">Total</th>
-                <th class="right">Commission</th>
-                <th class="right"></th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <!-- Saved Months -->
+        <h2>Saved Months</h2>
+        <div id="monthsList" class="muted"></div>
       </div>
 
       <div class="card">
-        <h2>Bi-Weekly Goal Tracker</h2>
+        <h2>Monthly Commission Summary</h2>
 
         <!-- Goal Progress -->
         <div style="margin-bottom:16px;">
           <div class="flex" style="justify-content:space-between; margin-bottom:6px;">
-            <span class="small">CP Net Goal: $45,000</span>
+            <span class="small">Monthly CP Net Goal: $90,000</span>
             <span class="small" id="goalPctText">0%</span>
           </div>
           <div class="goal-bar">
             <div class="goal-fill" id="goalFill" style="width:0%"></div>
-            <span class="goal-text" id="goalText">$0 / $45,000</span>
+            <span class="goal-text" id="goalText">$0 / $90,000</span>
           </div>
         </div>
 
         <div class="kpis">
-          <div class="kpi highlight"><div class="t">Total Commission</div><div class="v" id="kpiCommission">$0.00</div><div class="d">This period</div></div>
+          <div class="kpi highlight"><div class="t">Total Commission</div><div class="v" id="kpiCommission">$0.00</div><div class="d">This month</div></div>
           <div class="kpi"><div class="t">CP Net Sales</div><div class="v" id="kpiCpNet">$0.00</div><div class="d">Labor + parts − discounts</div></div>
           <div class="kpi"><div class="t">Warranty Sales</div><div class="v" id="kpiW">$0.00</div><div class="d">Labor + parts</div></div>
           <div class="kpi"><div class="t">Internal Sales</div><div class="v" id="kpiI">$0.00</div><div class="d">Labor + parts</div></div>
           <div class="kpi"><div class="t">Sublet Labor</div><div class="v" id="kpiSublet">$0.00</div><div class="d">Labor only</div></div>
-          <div class="kpi"><div class="t">Hours Sold</div><div class="v" id="kpiHours">0.0</div><div class="d">From RO entries</div></div>
+          <div class="kpi"><div class="t">Hours Sold</div><div class="v" id="kpiHours">0.0</div><div class="d">Total hours</div></div>
         </div>
 
         <div class="spacer"></div>
 
-        <div class="twoCol">
-          <div class="card" style="padding:12px; margin:0;">
-            <h2 style="margin-bottom:8px;">Commission Breakdown</h2>
-            <div class="muted" id="breakdownText"></div>
-          </div>
-          <div class="card" style="padding:12px; margin:0;">
-            <h2 style="margin-bottom:8px;">Efficiency Stats</h2>
-            <div class="muted" id="roiText"></div>
-          </div>
+        <div class="card" style="padding:12px; margin:0;">
+          <h2 style="margin-bottom:8px;">Commission Breakdown</h2>
+          <div class="muted" id="breakdownText"></div>
         </div>
 
         <div class="spacer"></div>
@@ -359,7 +237,7 @@
         <div class="flex">
           <button class="btn good" id="exportData">Export</button>
           <button class="btn primary" id="importData">Import</button>
-          <button class="btn bad" id="wipeCommissions">Clear Period</button>
+          <button class="btn bad" id="deleteMonth">Delete Month</button>
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none" />
       </div>
@@ -445,7 +323,7 @@
         <div class="spacer"></div>
 
         <div class="flex">
-          <button class="btn primary" id="saveMonthly">Save Monthly Inputs</button>
+          <button class="btn primary" id="saveMonthlyBonus">Save Monthly Inputs</button>
           <button class="btn" id="resetMonthly">Reset</button>
         </div>
       </div>
@@ -498,60 +376,6 @@
 
 <script>
 /* ============
-   CORE: MODELS
-============ */
-const Models = {
-  createRO(data = {}) {
-    return {
-      date: data.date || new Date().toISOString().split('T')[0],
-      roNumber: data.roNumber || "",
-      customer: data.customer || "",
-      cpLabor: Math.max(0, Number(data.cpLabor) || 0),
-      cpParts: Math.max(0, Number(data.cpParts) || 0),
-      wLabor: Math.max(0, Number(data.wLabor) || 0),
-      wParts: Math.max(0, Number(data.wParts) || 0),
-      iLabor: Math.max(0, Number(data.iLabor) || 0),
-      iParts: Math.max(0, Number(data.iParts) || 0),
-      subletLabor: Math.max(0, Number(data.subletLabor) || 0),
-      discounts: Math.max(0, Number(data.discounts) || 0),
-      hoursSold: Math.max(0, Number(data.hoursSold) || 0),
-      timestamp: data.timestamp || Date.now(),
-    };
-  },
-
-  validateRO(ro) {
-    const errors = [];
-    if (!ro.roNumber.trim()) errors.push("RO# required");
-    return errors;
-  },
-
-  getROType(ro) {
-    const hasCp = ro.cpLabor > 0 || ro.cpParts > 0;
-    const hasW = ro.wLabor > 0 || ro.wParts > 0;
-    const hasI = ro.iLabor > 0 || ro.iParts > 0;
-    const count = [hasCp, hasW, hasI].filter(Boolean).length;
-    if (count > 1) return 'mixed';
-    if (hasW) return 'warranty';
-    if (hasI) return 'internal';
-    return 'cp';
-  }
-};
-
-/* ============
-   QUICK SERVICES - Hendrick Toyota Merriam Pricing
-============ */
-const QuickServices = {
-  lof: { cpLabor: 49.95, cpParts: 40.00, hours: 0.5 },
-  synth: { cpLabor: 59.95, cpParts: 50.00, hours: 0.5 },
-  rotate: { cpLabor: 24.95, cpParts: 0, hours: 0.3 },
-  'brake-inspect': { cpLabor: 0, cpParts: 0, hours: 0.2 },
-  alignment: { cpLabor: 99.95, cpParts: 30.00, hours: 1.0 },
-  diag: { cpLabor: 189.95, cpParts: 0, hours: 1.5 },
-  brakes: { cpLabor: 179.95, cpParts: 170.00, hours: 1.5 },
-  trans: { cpLabor: 149.95, cpParts: 100.00, hours: 1.0 },
-};
-
-/* ============
    CORE: CALCULATOR
 ============ */
 const Calculator = {
@@ -569,7 +393,7 @@ const Calculator = {
     { threshold: 65000, addPct: 0.005, label: '$65K' },
   ],
 
-  biWeeklyGoal: 45000,
+  monthlyGoal: 90000,
 
   objWeights: {
     align: 0.002,
@@ -580,11 +404,11 @@ const Calculator = {
     hoursPerCpro: 0.001,
   },
 
-  calcRO(ro) {
-    const cpNet = Math.max(0, ro.cpLabor + ro.cpParts - ro.discounts);
-    const wSales = ro.wLabor + ro.wParts;
-    const iSales = ro.iLabor + ro.iParts;
-    const subletSales = ro.subletLabor;
+  calcMonthlyCommission(data) {
+    const cpNet = Math.max(0, data.cpLabor + data.cpParts - data.discounts);
+    const wSales = data.wLabor + data.wParts;
+    const iSales = data.iLabor + data.iParts;
+    const subletSales = data.subletLabor;
 
     const commission =
       cpNet * this.rates.cp +
@@ -595,23 +419,6 @@ const Calculator = {
     const total = cpNet + wSales + iSales + subletSales;
 
     return { cpNet, wSales, iSales, subletSales, commission, total };
-  },
-
-  calcPeriodTotals(ros) {
-    return ros.reduce(
-      (acc, ro) => {
-        const result = this.calcRO(ro);
-        acc.cpNet += result.cpNet;
-        acc.w += result.wSales;
-        acc.i += result.iSales;
-        acc.sublet += result.subletSales;
-        acc.hours += ro.hoursSold;
-        acc.commission += result.commission;
-        acc.total += result.total;
-        return acc;
-      },
-      { cpNet: 0, w: 0, i: 0, sublet: 0, hours: 0, commission: 0, total: 0 }
-    );
   },
 
   calcTierBonus(cpNet, eligible) {
@@ -644,22 +451,22 @@ const Calculator = {
     return count >= 15 ? 375 : 0;
   },
 
-  calcMonthlyBonus(monthly) {
+  calcMonthlyBonus(bonusData) {
     const eligible =
-      monthly.tierEligible === "yes"
+      bonusData.tierEligible === "yes"
         ? true
-        : monthly.tierEligible === "no"
+        : bonusData.tierEligible === "no"
         ? false
-        : monthly.reviewsCount >= 7;
+        : bonusData.reviewsCount >= 7;
 
-    const tier = this.calcTierBonus(monthly.monthlyCpNet, eligible);
+    const tier = this.calcTierBonus(bonusData.monthlyCpNet, eligible);
     const obj = this.calcObjectiveBonus(
-      monthly.objMode,
-      monthly.objBase,
-      monthly.objChecks,
-      monthly.objManualPct
+      bonusData.objMode,
+      bonusData.objBase,
+      bonusData.objChecks,
+      bonusData.objManualPct
     );
-    const review = this.calcReviewBonus(monthly.reviewsCount);
+    const review = this.calcReviewBonus(bonusData.reviewsCount);
 
     return {
       tier,
@@ -675,7 +482,7 @@ const Calculator = {
    CORE: STORAGE
 ============ */
 const Storage = {
-  KEY: "hendrick_merriam_pay_v1",
+  KEY: "hendrick_merriam_monthly_pay_v2",
 
   save(state) {
     localStorage.setItem(this.KEY, JSON.stringify(state));
@@ -687,9 +494,9 @@ const Storage = {
       if (!raw) return this.createDefaultState();
       const parsed = JSON.parse(raw);
       return {
-        ros: Array.isArray(parsed.ros) ? parsed.ros : [],
-        monthly: parsed.monthly || this.createDefaultMonthly(),
-        ui: parsed.ui || { activeTab: "commissions", periodFilter: "all" },
+        months: parsed.months || {},
+        currentMonthId: parsed.currentMonthId || null,
+        bonusData: parsed.bonusData || this.createDefaultBonusData(),
       };
     } catch (e) {
       console.error("Storage load failed:", e);
@@ -699,13 +506,27 @@ const Storage = {
 
   createDefaultState() {
     return {
-      ros: [],
-      monthly: this.createDefaultMonthly(),
-      ui: { activeTab: "commissions", periodFilter: "all" },
+      months: {},
+      currentMonthId: null,
+      bonusData: this.createDefaultBonusData(),
     };
   },
 
-  createDefaultMonthly() {
+  createDefaultMonthData() {
+    return {
+      cpLabor: 0,
+      cpParts: 0,
+      wLabor: 0,
+      wParts: 0,
+      iLabor: 0,
+      iParts: 0,
+      subletLabor: 0,
+      discounts: 0,
+      hoursSold: 0,
+    };
+  },
+
+  createDefaultBonusData() {
     return {
       monthLabel: "",
       monthlyCpNet: 0,
@@ -731,399 +552,23 @@ const Storage = {
 };
 
 /* ============
-   INDEXEDDB STORAGE
-============ */
-const IDBStorage = {
-  DB_NAME: 'JacePayDashboard',
-  DB_VERSION: 1,
-  db: null,
-
-  async init() {
-    if (this.db) return this.db;
-
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
-
-      request.onerror = () => reject(request.error);
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-
-        // ROs store with indexes
-        if (!db.objectStoreNames.contains('ros')) {
-          const rosStore = db.createObjectStore('ros', { keyPath: 'id', autoIncrement: true });
-          rosStore.createIndex('roNumber', 'roNumber', { unique: false });
-          rosStore.createIndex('date', 'date', { unique: false });
-          rosStore.createIndex('period', 'period', { unique: false });
-        }
-
-        // Periods store
-        if (!db.objectStoreNames.contains('periods')) {
-          const periodsStore = db.createObjectStore('periods', { keyPath: 'id', autoIncrement: true });
-          periodsStore.createIndex('name', 'name', { unique: false });
-          periodsStore.createIndex('startDate', 'startDate', { unique: false });
-          periodsStore.createIndex('isCurrent', 'isCurrent', { unique: false });
-        }
-
-        // Monthly store
-        if (!db.objectStoreNames.contains('monthly')) {
-          db.createObjectStore('monthly', { keyPath: 'id' });
-        }
-
-        // Settings store
-        if (!db.objectStoreNames.contains('settings')) {
-          db.createObjectStore('settings', { keyPath: 'key' });
-        }
-      };
-
-      request.onsuccess = () => {
-        this.db = request.result;
-        resolve(this.db);
-      };
-    });
-  },
-
-  async add(storeName, data) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
-      const store = tx.objectStore(storeName);
-      const request = store.add(data);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async put(storeName, data) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
-      const store = tx.objectStore(storeName);
-      const request = store.put(data);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async get(storeName, key) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const request = store.get(key);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async getAll(storeName) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async delete(storeName, key) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
-      const store = tx.objectStore(storeName);
-      const request = store.delete(key);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async clear(storeName) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readwrite');
-      const store = tx.objectStore(storeName);
-      const request = store.clear();
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async getByIndex(storeName, indexName, value) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const index = store.index(indexName);
-      const request = index.get(value);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async getAllByIndex(storeName, indexName, value) {
-    const db = await this.init();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(storeName, 'readonly');
-      const store = tx.objectStore(storeName);
-      const index = store.index(indexName);
-      const request = index.getAll(value);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-  },
-
-  async getSetting(key) {
-    const result = await this.get('settings', key);
-    return result ? result.value : null;
-  },
-
-  async setSetting(key, value) {
-    return this.put('settings', { key, value });
-  },
-
-  async getCurrentPeriod() {
-    const periods = await this.getAll('periods');
-    return periods.find(p => p.isCurrent) || null;
-  },
-
-  async migrateFromLocalStorage() {
-    const OLD_KEY = Storage.KEY;
-    const raw = localStorage.getItem(OLD_KEY);
-
-    if (!raw) return false;
-
-    const migrated = await this.getSetting('migrated_from_localStorage');
-    if (migrated) return false;
-
-    try {
-      const oldData = JSON.parse(raw);
-
-      // Create default current period
-      const periodId = await this.add('periods', {
-        name: 'Migrated Period',
-        startDate: new Date().toISOString(),
-        endDate: null,
-        isCurrent: true,
-        aggregates: null
-      });
-
-      // Migrate ROs with period reference
-      for (const ro of (oldData.ros || [])) {
-        await this.add('ros', {
-          ...ro,
-          period: periodId,
-          createdAt: ro.timestamp || Date.now(),
-          updatedAt: Date.now()
-        });
-      }
-
-      // Migrate monthly data
-      if (oldData.monthly) {
-        const monthId = oldData.monthly.monthLabel || 'current';
-        await this.put('monthly', { id: monthId, ...oldData.monthly });
-      }
-
-      // Migrate UI settings
-      if (oldData.ui) {
-        await this.setSetting('ui', oldData.ui);
-      }
-
-      // Mark migration complete
-      await this.setSetting('migrated_from_localStorage', true);
-      await this.setSetting('migration_date', new Date().toISOString());
-
-      console.log('Migration from localStorage complete');
-      return true;
-    } catch (e) {
-      console.error('Migration failed:', e);
-      return false;
-    }
-  },
-
-  async loadState() {
-    const [ros, periods, monthlyList, uiSetting] = await Promise.all([
-      this.getAll('ros'),
-      this.getAll('periods'),
-      this.getAll('monthly'),
-      this.getSetting('ui')
-    ]);
-
-    const currentPeriod = periods.find(p => p.isCurrent) || null;
-    const currentROs = currentPeriod
-      ? ros.filter(r => r.period === currentPeriod.id)
-      : ros;
-
-    return {
-      ros: currentROs,
-      allROs: ros,
-      periods,
-      currentPeriod,
-      monthly: monthlyList[0] || Storage.createDefaultMonthly(),
-      ui: uiSetting || { activeTab: 'commissions', periodFilter: 'all' }
-    };
-  },
-
-  async saveRO(ro) {
-    const currentPeriod = await this.getCurrentPeriod();
-    const roWithMeta = {
-      ...ro,
-      period: currentPeriod ? currentPeriod.id : null,
-      createdAt: ro.createdAt || Date.now(),
-      updatedAt: Date.now()
-    };
-
-    if (ro.id) {
-      await this.put('ros', roWithMeta);
-      return ro.id;
-    } else {
-      return await this.add('ros', roWithMeta);
-    }
-  },
-
-  async deleteRO(id) {
-    return this.delete('ros', id);
-  },
-
-  async saveMonthly(monthly) {
-    const monthId = monthly.monthLabel || 'current';
-    return this.put('monthly', { id: monthId, ...monthly });
-  },
-
-  async createPeriod(name, startDate) {
-    // Close current period
-    const current = await this.getCurrentPeriod();
-    if (current) {
-      current.isCurrent = false;
-      current.endDate = new Date().toISOString();
-      const ros = await this.getAllByIndex('ros', 'period', current.id);
-      current.aggregates = Calculator.calcPeriodTotals(ros);
-      await this.put('periods', current);
-    }
-
-    // Create new period
-    return this.add('periods', {
-      name,
-      startDate,
-      endDate: null,
-      isCurrent: true,
-      aggregates: null
-    });
-  },
-
-  async wipeROs() {
-    return this.clear('ros');
-  },
-
-  async wipeAll() {
-    await Promise.all([
-      this.clear('ros'),
-      this.clear('periods'),
-      this.clear('monthly'),
-      this.clear('settings')
-    ]);
-  }
-};
-
-/* ============
    STATE MANAGEMENT
 ============ */
 const StateManager = {
   state: null,
   listeners: [],
-  useIDB: false,
-  initialized: false,
 
-  async init() {
-    // Try IndexedDB first
-    if (window.indexedDB) {
-      try {
-        await IDBStorage.init();
-        await IDBStorage.migrateFromLocalStorage();
-        this.state = await IDBStorage.loadState();
-        this.useIDB = true;
-        this.initialized = true;
-        console.log('Using IndexedDB storage');
-        return;
-      } catch (e) {
-        console.warn('IndexedDB failed, falling back to localStorage:', e);
-      }
-    }
-
-    // Fallback to localStorage
+  init() {
     this.state = Storage.load();
-    this.useIDB = false;
-    this.initialized = true;
-    console.log('Using localStorage storage');
   },
 
   get() {
     return this.state || Storage.load();
   },
 
-  async update(updater) {
+  update(updater) {
     this.state = updater(this.state);
-
-    if (this.useIDB) {
-      // Persist to localStorage as backup
-      Storage.save(this.state);
-    } else {
-      Storage.save(this.state);
-    }
-
-    this.notify();
-  },
-
-  async addRO(ro) {
-    if (this.useIDB) {
-      const id = await IDBStorage.saveRO(ro);
-      ro.id = id;
-    }
-    this.state = {
-      ...this.state,
-      ros: [...this.state.ros, ro]
-    };
     Storage.save(this.state);
-    this.notify();
-  },
-
-  async removeRO(idx) {
-    const ro = this.state.ros[idx];
-    if (this.useIDB && ro && ro.id) {
-      await IDBStorage.deleteRO(ro.id);
-    }
-    this.state = {
-      ...this.state,
-      ros: this.state.ros.filter((_, i) => i !== idx)
-    };
-    Storage.save(this.state);
-    this.notify();
-  },
-
-  async saveMonthly(monthly) {
-    if (this.useIDB) {
-      await IDBStorage.saveMonthly(monthly);
-    }
-    this.state = { ...this.state, monthly };
-    Storage.save(this.state);
-    this.notify();
-  },
-
-  async wipeROs() {
-    if (this.useIDB) {
-      await IDBStorage.wipeROs();
-    }
-    this.state = { ...this.state, ros: [] };
-    Storage.save(this.state);
-    this.notify();
-  },
-
-  async wipeAll() {
-    if (this.useIDB) {
-      await IDBStorage.wipeAll();
-    }
-    Storage.wipe();
-    this.state = Storage.createDefaultState();
     this.notify();
   },
 
@@ -1140,43 +585,9 @@ const StateManager = {
 };
 
 /* ============
-   DATE HELPERS
-============ */
-const DateHelpers = {
-  today() {
-    return new Date().toISOString().split('T')[0];
-  },
-
-  isToday(dateStr) {
-    return dateStr === this.today();
-  },
-
-  isThisWeek(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - now.getDay());
-    weekStart.setHours(0, 0, 0, 0);
-    return date >= weekStart;
-  },
-
-  filterByPeriod(ros, period) {
-    if (period === 'today') {
-      return ros.filter(ro => this.isToday(ro.date));
-    }
-    if (period === 'week') {
-      return ros.filter(ro => this.isThisWeek(ro.date));
-    }
-    return ros;
-  }
-};
-
-/* ============
    UI COMPONENTS
 ============ */
 const UI = {
-  currentPeriod: 'all',
-
   money(n) {
     return Number(n || 0).toLocaleString(undefined, {
       style: "currency",
@@ -1205,19 +616,8 @@ const UI = {
       .replace(/"/g, "&quot;");
   },
 
-  renderTodayStats(ros) {
-    const todayROs = ros.filter(ro => DateHelpers.isToday(ro.date));
-    const todayTotals = Calculator.calcPeriodTotals(todayROs);
-    const periodTotals = Calculator.calcPeriodTotals(ros);
-
-    document.getElementById('todayROs').textContent = todayROs.length;
-    document.getElementById('todaySales').textContent = this.money(todayTotals.total);
-    document.getElementById('todayComm').textContent = this.money(todayTotals.commission);
-    document.getElementById('periodComm').textContent = this.money(periodTotals.commission);
-  },
-
   renderGoalProgress(cpNet) {
-    const goal = Calculator.biWeeklyGoal;
+    const goal = Calculator.monthlyGoal;
     const pct = Math.min(100, (cpNet / goal) * 100);
 
     document.getElementById('goalFill').style.width = pct + '%';
@@ -1225,71 +625,28 @@ const UI = {
     document.getElementById('goalPctText').textContent = pct.toFixed(0) + '%';
   },
 
-  renderROTable(ros) {
-    const filteredROs = DateHelpers.filterByPeriod(ros, this.currentPeriod);
-    const tbody = document.querySelector("#roTable tbody");
+  renderCommissionSummary(monthData) {
+    const result = Calculator.calcMonthlyCommission(monthData);
 
-    // Sort by date descending, then by timestamp
-    const sorted = [...filteredROs].sort((a, b) => {
-      if (a.date !== b.date) return b.date.localeCompare(a.date);
-      return (b.timestamp || 0) - (a.timestamp || 0);
-    });
+    document.getElementById("kpiCpNet").textContent = this.money(result.cpNet);
+    document.getElementById("kpiW").textContent = this.money(result.wSales);
+    document.getElementById("kpiI").textContent = this.money(result.iSales);
+    document.getElementById("kpiSublet").textContent = this.money(result.subletSales);
+    document.getElementById("kpiHours").textContent = monthData.hoursSold.toFixed(1);
+    document.getElementById("kpiCommission").textContent = this.moneyExact(result.commission);
 
-    tbody.innerHTML = sorted
-      .map((ro) => {
-        const idx = ros.indexOf(ro);
-        const result = Calculator.calcRO(ro);
-        const type = Models.getROType(ro);
-        const typeLabel = { cp: 'CP', warranty: 'W', internal: 'INT', mixed: 'MIX' }[type];
-        const dateDisplay = DateHelpers.isToday(ro.date) ? 'Today' : ro.date;
+    this.renderGoalProgress(result.cpNet);
 
-        return `
-        <tr data-idx="${idx}">
-          <td>${this.escape(dateDisplay)}</td>
-          <td><strong>${this.escape(ro.roNumber)}</strong></td>
-          <td><span class="ro-type ${type}">${typeLabel}</span></td>
-          <td class="right">${this.money(result.total)}</td>
-          <td class="right"><strong>${this.moneyExact(result.commission)}</strong></td>
-          <td class="right"><button class="btn bad" data-remove="${idx}" style="padding:4px 8px;">×</button></td>
-        </tr>
-      `;
-      })
-      .join("");
-
-    if (sorted.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">No ROs for this period</td></tr>`;
-    }
-
-    tbody.querySelectorAll("button[data-remove]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        Events.removeRO(Number(btn.dataset.remove));
-      });
-    });
-  },
-
-  renderCommissionSummary(ros) {
-    const totals = Calculator.calcPeriodTotals(ros);
-
-    document.getElementById("kpiCpNet").textContent = this.money(totals.cpNet);
-    document.getElementById("kpiW").textContent = this.money(totals.w);
-    document.getElementById("kpiI").textContent = this.money(totals.i);
-    document.getElementById("kpiSublet").textContent = this.money(totals.sublet);
-    document.getElementById("kpiHours").textContent = totals.hours.toFixed(1);
-    document.getElementById("kpiCommission").textContent = this.moneyExact(totals.commission);
-
-    this.renderGoalProgress(totals.cpNet);
-    this.renderTodayStats(ros);
-
-    const cpComm = totals.cpNet * Calculator.rates.cp;
-    const wComm = totals.w * Calculator.rates.w;
-    const iComm = totals.i * Calculator.rates.i;
-    const subComm = totals.sublet * Calculator.rates.sublet;
+    const cpComm = result.cpNet * Calculator.rates.cp;
+    const wComm = result.wSales * Calculator.rates.w;
+    const iComm = result.iSales * Calculator.rates.i;
+    const subComm = result.subletSales * Calculator.rates.sublet;
 
     const breakdown = [
-      ["CP (7%)", cpComm, totals.cpNet],
-      ["Warranty (5%)", wComm, totals.w],
-      ["Internal (5%)", iComm, totals.i],
-      ["Sublet (0.5%)", subComm, totals.sublet],
+      ["CP (7%)", cpComm, result.cpNet],
+      ["Warranty (5%)", wComm, result.wSales],
+      ["Internal (5%)", iComm, result.iSales],
+      ["Sublet (0.5%)", subComm, result.subletSales],
     ];
 
     const lines = breakdown
@@ -1300,22 +657,11 @@ const UI = {
       .join("<br>");
 
     document.getElementById("breakdownText").innerHTML =
-      lines || "<span class='muted'>Add ROs to see breakdown</span>";
-
-    const avgPerRO = ros.length ? totals.commission / ros.length : 0;
-    const avgPerHour = totals.hours > 0 ? totals.commission / totals.hours : 0;
-    const avgSalesPerRO = ros.length ? totals.total / ros.length : 0;
-
-    document.getElementById("roiText").innerHTML = `
-      • ROs entered: <b>${ros.length}</b><br>
-      • Avg commission/RO: <b>${this.moneyExact(avgPerRO)}</b><br>
-      • Avg sales/RO: <b>${this.money(avgSalesPerRO)}</b><br>
-      • Commission/hour: <b>${totals.hours > 0 ? this.moneyExact(avgPerHour) : "—"}</b>
-    `;
+      lines || "<span class='muted'>Enter monthly totals to see breakdown</span>";
   },
 
-  renderMonthly(monthly) {
-    const bonus = Calculator.calcMonthlyBonus(monthly);
+  renderMonthlyBonus(bonusData) {
+    const bonus = Calculator.calcMonthlyBonus(bonusData);
 
     document.getElementById("kpiTierPct").textContent = this.pct(bonus.tier.pct);
     document.getElementById("kpiTierDollars").textContent = this.moneyExact(bonus.tier.dollars);
@@ -1325,23 +671,23 @@ const UI = {
     document.getElementById("kpiTotalMonthly").textContent = this.moneyExact(bonus.total);
 
     const tierPill = bonus.eligible
-      ? `<span class="pill"><span class="dot good"></span>Tier eligible</span>`
-      : `<span class="pill"><span class="dot bad"></span>Need 7+ reviews for tier</span>`;
+      ? `<span class="pill" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--good);"><span class="dot good" style="width:8px; height:8px; border-radius:99px; background:var(--good);"></span>Tier eligible</span>`
+      : `<span class="pill" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--bad);"><span class="dot bad" style="width:8px; height:8px; border-radius:99px; background:var(--bad);"></span>Need 7+ reviews for tier</span>`;
 
     const reviewPill =
       bonus.review > 0
-        ? `<span class="pill"><span class="dot good"></span>$375 review bonus earned!</span>`
-        : `<span class="pill"><span class="dot warn"></span>Reviews: ${monthly.reviewsCount}/15 for $375</span>`;
+        ? `<span class="pill" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--good);"><span class="dot good" style="width:8px; height:8px; border-radius:99px; background:var(--good);"></span>$375 review bonus earned!</span>`
+        : `<span class="pill" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0f1723; font-size:11px; color:var(--warn);"><span class="dot warn" style="width:8px; height:8px; border-radius:99px; background:var(--warn);"></span>Reviews: ${bonusData.reviewsCount}/15 for $375</span>`;
 
     document.getElementById("monthlyStatus").innerHTML = `
       <div class="flex" style="margin-bottom:10px">${tierPill}${reviewPill}</div>
-      • CP Net: <b>${this.money(monthly.monthlyCpNet)}</b><br>
-      • Objective Base: <b>${this.money(monthly.objBase)}</b>
+      • CP Net: <b>${this.money(bonusData.monthlyCpNet)}</b><br>
+      • Objective Base: <b>${this.money(bonusData.objBase)}</b>
     `;
 
     // Tier breakdown
     const tierHtml = Calculator.tierLevels.map(lvl => {
-      const hit = monthly.monthlyCpNet >= lvl.threshold && bonus.eligible;
+      const hit = bonusData.monthlyCpNet >= lvl.threshold && bonus.eligible;
       const icon = hit ? '✓' : '○';
       const style = hit ? 'color:var(--good)' : 'color:var(--muted)';
       return `<div style="${style}">${icon} ${lvl.label} (+0.5%)</div>`;
@@ -1349,73 +695,156 @@ const UI = {
 
     document.getElementById("tierBreakdown").innerHTML = tierHtml || 'Hit tier levels to earn bonus %';
   },
+
+  renderMonthsList(months, currentMonthId) {
+    const monthIds = Object.keys(months).sort().reverse();
+
+    if (monthIds.length === 0) {
+      document.getElementById("monthsList").innerHTML = '<span class="muted">No saved months yet. Select a month above to get started.</span>';
+      return;
+    }
+
+    const html = monthIds.map(monthId => {
+      const isCurrent = monthId === currentMonthId;
+      const badge = isCurrent ? '<span style="color:var(--good); font-weight:600;"> (Current)</span>' : '';
+      const result = Calculator.calcMonthlyCommission(months[monthId]);
+      return `• <b>${monthId}</b>${badge}: ${this.moneyExact(result.commission)}<br>`;
+    }).join('');
+
+    document.getElementById("monthsList").innerHTML = html;
+  }
 };
 
 /* ============
    EVENT HANDLERS
 ============ */
 const Events = {
-  async addRO() {
-    const data = {
-      roNumber: document.getElementById("roNumber").value,
-      date: document.getElementById("roDate").value || DateHelpers.today(),
-      customer: document.getElementById("customerName").value,
-      cpLabor: document.getElementById("cpLabor").value,
-      cpParts: document.getElementById("cpParts").value,
-      wLabor: document.getElementById("wLabor").value,
-      wParts: document.getElementById("wParts").value,
-      iLabor: document.getElementById("iLabor").value,
-      iParts: document.getElementById("iParts").value,
-      subletLabor: document.getElementById("subletLabor").value,
-      discounts: document.getElementById("discounts").value,
-      hoursSold: document.getElementById("hoursSold").value,
-    };
-
-    const ro = Models.createRO(data);
-    const errors = Models.validateRO(ro);
-
-    if (errors.length) {
-      alert("Please enter an RO number");
-      document.getElementById("roNumber").focus();
+  loadMonth() {
+    const monthId = document.getElementById("currentMonth").value;
+    if (!monthId) {
+      alert("Please select a month first");
       return;
     }
 
-    await StateManager.addRO(ro);
+    StateManager.update(state => ({
+      ...state,
+      currentMonthId: monthId
+    }));
 
-    this.clearROForm();
-    document.getElementById("roNumber").focus();
+    const state = StateManager.get();
+    const monthData = state.months[monthId] || Storage.createDefaultMonthData();
+
+    this.hydrateMonthInputs(monthData);
+    UI.renderCommissionSummary(monthData);
+    UI.renderMonthsList(state.months, state.currentMonthId);
   },
 
-  applyQuickService(serviceId) {
-    const service = QuickServices[serviceId];
-    if (!service) return;
+  newMonth() {
+    const monthId = document.getElementById("currentMonth").value;
+    if (!monthId) {
+      alert("Please select a month first");
+      return;
+    }
 
-    const cpLaborEl = document.getElementById("cpLabor");
-    const cpPartsEl = document.getElementById("cpParts");
-    const hoursEl = document.getElementById("hoursSold");
+    const state = StateManager.get();
+    if (state.months[monthId]) {
+      if (!confirm(`Month ${monthId} already exists. Create a new empty month anyway?`)) {
+        return;
+      }
+    }
 
-    cpLaborEl.value = (Number(cpLaborEl.value) || 0) + service.cpLabor;
-    cpPartsEl.value = (Number(cpPartsEl.value) || 0) + service.cpParts;
-    hoursEl.value = (Number(hoursEl.value) || 0) + service.hours;
+    StateManager.update(state => ({
+      ...state,
+      months: {
+        ...state.months,
+        [monthId]: Storage.createDefaultMonthData()
+      },
+      currentMonthId: monthId
+    }));
+
+    this.hydrateMonthInputs(Storage.createDefaultMonthData());
+    UI.renderCommissionSummary(Storage.createDefaultMonthData());
+    UI.renderMonthsList(StateManager.get().months, monthId);
+
+    alert(`New month ${monthId} created!`);
   },
 
-  async removeRO(idx) {
-    await StateManager.removeRO(idx);
+  saveMonth() {
+    const state = StateManager.get();
+    const monthId = state.currentMonthId;
+
+    if (!monthId) {
+      alert("Please load or create a month first");
+      return;
+    }
+
+    const monthData = {
+      cpLabor: Number(document.getElementById("cpLabor").value) || 0,
+      cpParts: Number(document.getElementById("cpParts").value) || 0,
+      wLabor: Number(document.getElementById("wLabor").value) || 0,
+      wParts: Number(document.getElementById("wParts").value) || 0,
+      iLabor: Number(document.getElementById("iLabor").value) || 0,
+      iParts: Number(document.getElementById("iParts").value) || 0,
+      subletLabor: Number(document.getElementById("subletLabor").value) || 0,
+      discounts: Number(document.getElementById("discounts").value) || 0,
+      hoursSold: Number(document.getElementById("hoursSold").value) || 0,
+    };
+
+    StateManager.update(state => ({
+      ...state,
+      months: {
+        ...state.months,
+        [monthId]: monthData
+      }
+    }));
+
+    UI.renderCommissionSummary(monthData);
+    UI.renderMonthsList(StateManager.get().months, monthId);
   },
 
-  clearROForm() {
-    ["roNumber", "customerName"].forEach((id) => {
-      document.getElementById(id).value = "";
+  clearMonth() {
+    this.hydrateMonthInputs(Storage.createDefaultMonthData());
+    UI.renderCommissionSummary(Storage.createDefaultMonthData());
+  },
+
+  deleteMonth() {
+    const state = StateManager.get();
+    const monthId = state.currentMonthId;
+
+    if (!monthId) {
+      alert("No month is currently loaded");
+      return;
+    }
+
+    if (!confirm(`Delete month ${monthId}? This cannot be undone.`)) {
+      return;
+    }
+
+    StateManager.update(state => {
+      const newMonths = { ...state.months };
+      delete newMonths[monthId];
+      return {
+        ...state,
+        months: newMonths,
+        currentMonthId: null
+      };
     });
-    ["cpLabor", "cpParts", "wLabor", "wParts", "iLabor", "iParts", "subletLabor", "discounts", "hoursSold"].forEach((id) => {
-      document.getElementById(id).value = 0;
-    });
-    document.getElementById("roDate").value = DateHelpers.today();
+
+    this.clearMonth();
+    UI.renderMonthsList(StateManager.get().months, null);
+    alert(`Month ${monthId} deleted`);
   },
 
-  async wipeCommissions() {
-    if (!confirm("Clear all RO data for this pay period?")) return;
-    await StateManager.wipeROs();
+  hydrateMonthInputs(monthData) {
+    document.getElementById("cpLabor").value = monthData.cpLabor || 0;
+    document.getElementById("cpParts").value = monthData.cpParts || 0;
+    document.getElementById("wLabor").value = monthData.wLabor || 0;
+    document.getElementById("wParts").value = monthData.wParts || 0;
+    document.getElementById("iLabor").value = monthData.iLabor || 0;
+    document.getElementById("iParts").value = monthData.iParts || 0;
+    document.getElementById("subletLabor").value = monthData.subletLabor || 0;
+    document.getElementById("discounts").value = monthData.discounts || 0;
+    document.getElementById("hoursSold").value = monthData.hoursSold || 0;
   },
 
   exportData() {
@@ -1426,7 +855,7 @@ const Events = {
     const link = document.createElement('a');
     link.href = url;
     const timestamp = new Date().toISOString().split('T')[0];
-    link.download = `hendrick-merriam-pay-${timestamp}.json`;
+    link.download = `hendrick-merriam-monthly-${timestamp}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1446,18 +875,24 @@ const Events = {
       try {
         const imported = JSON.parse(e.target.result);
 
-        if (!imported.ros || !Array.isArray(imported.ros)) {
-          alert("Invalid file format: missing RO data");
+        if (!imported.months || typeof imported.months !== 'object') {
+          alert("Invalid file format: missing months data");
           return;
         }
 
         if (confirm("This will replace all current data. Continue?")) {
           StateManager.update(() => ({
-            ros: imported.ros || [],
-            monthly: imported.monthly || Storage.createDefaultMonthly(),
-            ui: imported.ui || { activeTab: "commissions", periodFilter: "all" },
+            months: imported.months || {},
+            currentMonthId: imported.currentMonthId || null,
+            bonusData: imported.bonusData || Storage.createDefaultBonusData(),
           }));
           alert("Data imported successfully!");
+
+          // Reload current month if set
+          if (imported.currentMonthId) {
+            document.getElementById("currentMonth").value = imported.currentMonthId;
+            this.loadMonth();
+          }
         }
       } catch (err) {
         alert("Failed to import: " + err.message);
@@ -1467,8 +902,8 @@ const Events = {
     event.target.value = '';
   },
 
-  async saveMonthly() {
-    const monthly = {
+  saveMonthlyBonus() {
+    const bonusData = {
       monthLabel: document.getElementById("monthLabel").value,
       monthlyCpNet: Number(document.getElementById("monthlyCpNet").value) || 0,
       reviewsCount: Number(document.getElementById("reviewsCount").value) || 0,
@@ -1486,33 +921,44 @@ const Events = {
       },
     };
 
-    await StateManager.saveMonthly(monthly);
-    alert("Monthly inputs saved!");
+    StateManager.update(state => ({
+      ...state,
+      bonusData
+    }));
+
+    alert("Monthly bonus inputs saved!");
   },
 
-  async resetMonthly() {
-    if (!confirm("Reset monthly inputs?")) return;
-    await StateManager.saveMonthly(Storage.createDefaultMonthly());
-    this.hydrateMonthlyInputs();
+  resetMonthly() {
+    if (!confirm("Reset monthly bonus inputs?")) return;
+
+    StateManager.update(state => ({
+      ...state,
+      bonusData: Storage.createDefaultBonusData()
+    }));
+
+    this.hydrateBonusInputs();
   },
 
-  async wipeAll() {
+  wipeAll() {
     if (!confirm("This will delete ALL data. Are you sure?")) return;
-    await StateManager.wipeAll();
-    this.clearROForm();
+
+    StateManager.update(() => Storage.createDefaultState());
+    this.clearMonth();
+    UI.renderMonthsList({}, null);
   },
 
-  hydrateMonthlyInputs() {
-    const m = StateManager.get().monthly;
-    document.getElementById("monthLabel").value = m.monthLabel || "";
-    document.getElementById("monthlyCpNet").value = m.monthlyCpNet || 0;
-    document.getElementById("reviewsCount").value = m.reviewsCount || 0;
-    document.getElementById("tierEligible").value = m.tierEligible || "auto";
-    document.getElementById("objBase").value = m.objBase || 0;
-    document.getElementById("objMode").value = m.objMode || "weighted";
-    document.getElementById("objManualPct").value = m.objManualPct || 0;
+  hydrateBonusInputs() {
+    const b = StateManager.get().bonusData;
+    document.getElementById("monthLabel").value = b.monthLabel || "";
+    document.getElementById("monthlyCpNet").value = b.monthlyCpNet || 0;
+    document.getElementById("reviewsCount").value = b.reviewsCount || 0;
+    document.getElementById("tierEligible").value = b.tierEligible || "auto";
+    document.getElementById("objBase").value = b.objBase || 0;
+    document.getElementById("objMode").value = b.objMode || "weighted";
+    document.getElementById("objManualPct").value = b.objManualPct || 0;
 
-    const c = m.objChecks || {};
+    const c = b.objChecks || {};
     document.getElementById("objAlign").checked = !!c.align;
     document.getElementById("objTotLaborGross").checked = !!c.totLaborGross;
     document.getElementById("objCpLaborGross").checked = !!c.cpLaborGross;
@@ -1528,134 +974,13 @@ const Events = {
     document.getElementById("objWeighted").classList.toggle("hide", mode !== "weighted");
     document.getElementById("objManual").classList.toggle("hide", mode !== "manual");
   },
-
-  setPeriodFilter(period) {
-    UI.currentPeriod = period;
-    document.querySelectorAll('.period-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.period === period);
-    });
-    UI.renderROTable(StateManager.get().ros);
-  },
-
-  async createNewPeriod() {
-    const name = prompt('Enter a name for the new pay period (e.g., "Jan 1-15, 2026"):');
-    if (!name) return;
-
-    if (!StateManager.useIDB) {
-      alert('Period management requires IndexedDB storage');
-      return;
-    }
-
-    try {
-      await IDBStorage.createPeriod(name, new Date().toISOString());
-      // Reload state to get updated periods
-      StateManager.state = await IDBStorage.loadState();
-      StateManager.notify();
-      this.renderPeriodSelector();
-      alert('New period created! ROs will now be added to this period.');
-    } catch (e) {
-      console.error('Failed to create period:', e);
-      alert('Failed to create new period');
-    }
-  },
-
-  async closePeriod() {
-    if (!StateManager.useIDB) {
-      alert('Period management requires IndexedDB storage');
-      return;
-    }
-
-    const currentPeriod = await IDBStorage.getCurrentPeriod();
-    if (!currentPeriod) {
-      alert('No active period to close');
-      return;
-    }
-
-    if (!confirm(`Close period "${currentPeriod.name}"? This will calculate and store the final totals.`)) {
-      return;
-    }
-
-    try {
-      // Close current period and calculate aggregates
-      const ros = await IDBStorage.getAllByIndex('ros', 'period', currentPeriod.id);
-      currentPeriod.isCurrent = false;
-      currentPeriod.endDate = new Date().toISOString();
-      currentPeriod.aggregates = Calculator.calcPeriodTotals(ros);
-      await IDBStorage.put('periods', currentPeriod);
-
-      // Reload state
-      StateManager.state = await IDBStorage.loadState();
-      StateManager.notify();
-      this.renderPeriodSelector();
-      alert('Period closed successfully!');
-    } catch (e) {
-      console.error('Failed to close period:', e);
-      alert('Failed to close period');
-    }
-  },
-
-  async switchPeriod(periodId) {
-    if (!StateManager.useIDB) return;
-
-    try {
-      if (periodId === 'all') {
-        // Show all ROs
-        const allROs = await IDBStorage.getAll('ros');
-        StateManager.state = { ...StateManager.state, ros: allROs };
-      } else {
-        const ros = await IDBStorage.getAllByIndex('ros', 'period', Number(periodId));
-        StateManager.state = { ...StateManager.state, ros };
-      }
-      StateManager.notify();
-    } catch (e) {
-      console.error('Failed to switch period:', e);
-    }
-  },
-
-  async renderPeriodSelector() {
-    const select = document.getElementById('periodSelect');
-    const infoEl = document.getElementById('periodInfo');
-    if (!select) return;
-
-    if (!StateManager.useIDB) {
-      select.innerHTML = '<option value="current">Current Period (localStorage)</option>';
-      infoEl.textContent = 'Using localStorage - IndexedDB not available';
-      return;
-    }
-
-    try {
-      const periods = await IDBStorage.getAll('periods');
-      const currentPeriod = periods.find(p => p.isCurrent);
-
-      // Build options
-      let options = '<option value="all">All Periods</option>';
-      periods.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-      for (const period of periods) {
-        const selected = currentPeriod && period.id === currentPeriod.id ? 'selected' : '';
-        const status = period.isCurrent ? ' (Active)' : '';
-        options += `<option value="${period.id}" ${selected}>${period.name}${status}</option>`;
-      }
-      select.innerHTML = options;
-
-      // Show period info
-      if (currentPeriod) {
-        const startDate = new Date(currentPeriod.startDate).toLocaleDateString();
-        infoEl.textContent = `Active period started: ${startDate}`;
-      } else {
-        infoEl.textContent = 'No active period - click "New Period" to start tracking';
-      }
-    } catch (e) {
-      console.error('Failed to render period selector:', e);
-      select.innerHTML = '<option value="current">Current Period</option>';
-    }
-  }
 };
 
 /* ============
    TABS
 ============ */
 const tabDefs = [
-  { id: "commissions", label: "Bi-Weekly Pay" },
+  { id: "commissions", label: "Monthly Pay" },
   { id: "bonuses", label: "Monthly Bonuses" },
 ];
 
@@ -1678,117 +1003,90 @@ function showTab(id) {
   });
 
   if (id === "bonuses") {
-    Events.hydrateMonthlyInputs();
+    Events.hydrateBonusInputs();
   }
 }
 
 /* ============
-   KEYBOARD SHORTCUTS
-============ */
-document.addEventListener('keydown', (e) => {
-  // Enter to add RO when in RO number field
-  if (e.key === 'Enter' && document.activeElement.id === 'roNumber') {
-    e.preventDefault();
-    Events.addRO();
-  }
-});
-
-/* ============
    INIT
 ============ */
-async function init() {
-  // Show loading state
-  document.body.style.opacity = '0.5';
-  document.body.style.pointerEvents = 'none';
+function init() {
+  // Initialize storage
+  StateManager.init();
 
-  try {
-    // Initialize storage (IndexedDB with localStorage fallback)
-    await StateManager.init();
-  } catch (e) {
-    console.error('Storage initialization failed:', e);
-  }
-
-  // Remove loading state
-  document.body.style.opacity = '1';
-  document.body.style.pointerEvents = 'auto';
-
-  // Set today's date as default
-  document.getElementById("roDate").value = DateHelpers.today();
+  // Set current month as default
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  document.getElementById("currentMonth").value = currentMonth;
 
   // Wire up event handlers
-  document.getElementById("addRO").addEventListener("click", () => Events.addRO());
-  document.getElementById("clearRO").addEventListener("click", () => Events.clearROForm());
-  document.getElementById("wipeCommissions").addEventListener("click", () => Events.wipeCommissions());
+  document.getElementById("loadMonth").addEventListener("click", () => Events.loadMonth());
+  document.getElementById("newMonth").addEventListener("click", () => Events.newMonth());
+  document.getElementById("saveMonth").addEventListener("click", () => Events.saveMonth());
+  document.getElementById("clearMonth").addEventListener("click", () => Events.clearMonth());
+  document.getElementById("deleteMonth").addEventListener("click", () => Events.deleteMonth());
   document.getElementById("exportData").addEventListener("click", () => Events.exportData());
   document.getElementById("importData").addEventListener("click", () => Events.importData());
   document.getElementById("importFile").addEventListener("change", (e) => Events.handleFileImport(e));
-  document.getElementById("saveMonthly").addEventListener("click", () => Events.saveMonthly());
+  document.getElementById("saveMonthlyBonus").addEventListener("click", () => Events.saveMonthlyBonus());
   document.getElementById("resetMonthly").addEventListener("click", () => Events.resetMonthly());
   document.getElementById("wipeAll").addEventListener("click", () => Events.wipeAll());
 
-  // Quick service buttons
-  document.querySelectorAll('.quick-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      Events.applyQuickService(btn.dataset.service);
+  // Auto-save on input changes
+  ["cpLabor", "cpParts", "wLabor", "wParts", "iLabor", "iParts", "subletLabor", "discounts", "hoursSold"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => {
+      const state = StateManager.get();
+      if (state.currentMonthId) {
+        Events.saveMonth();
+      }
     });
   });
-
-  // Period filter buttons
-  document.querySelectorAll('.period-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      Events.setPeriodFilter(btn.dataset.period);
-    });
-  });
-
-  // Period management
-  document.getElementById("newPeriod").addEventListener("click", () => Events.createNewPeriod());
-  document.getElementById("closePeriod").addEventListener("click", () => Events.closePeriod());
-  document.getElementById("periodSelect").addEventListener("change", (e) => Events.switchPeriod(e.target.value));
-
-  // Render period selector
-  Events.renderPeriodSelector();
 
   // Obj mode toggle
   document.getElementById("objMode").addEventListener("change", () => {
     Events.updateObjModeUI();
-    UI.renderMonthly(StateManager.get().monthly);
+    UI.renderMonthlyBonus(StateManager.get().bonusData);
   });
 
-  // Live updates for monthly
+  // Live updates for monthly bonus
   ["monthLabel", "monthlyCpNet", "reviewsCount", "tierEligible", "objBase", "objManualPct"].forEach((id) => {
     document.getElementById(id).addEventListener("input", () => {
-      UI.renderMonthly(StateManager.get().monthly);
+      UI.renderMonthlyBonus(StateManager.get().bonusData);
     });
   });
 
   ["objAlign", "objTotLaborGross", "objCpLaborGross", "objHag", "objCpGrossPerRo", "objHoursPerCpro"].forEach((id) => {
     document.getElementById(id).addEventListener("change", () => {
-      UI.renderMonthly(StateManager.get().monthly);
+      UI.renderMonthlyBonus(StateManager.get().bonusData);
     });
   });
 
   // Subscribe to state changes
   StateManager.subscribe((state) => {
-    UI.renderROTable(state.ros);
-    UI.renderCommissionSummary(state.ros);
-    UI.renderMonthly(state.monthly);
+    const monthData = state.currentMonthId && state.months[state.currentMonthId]
+      ? state.months[state.currentMonthId]
+      : Storage.createDefaultMonthData();
+
+    UI.renderCommissionSummary(monthData);
+    UI.renderMonthlyBonus(state.bonusData);
+    UI.renderMonthsList(state.months, state.currentMonthId);
   });
 
   // Initial render
   const state = StateManager.get();
-  UI.renderROTable(state.ros);
-  UI.renderCommissionSummary(state.ros);
-  UI.renderMonthly(state.monthly);
+  const monthData = state.currentMonthId && state.months[state.currentMonthId]
+    ? state.months[state.currentMonthId]
+    : Storage.createDefaultMonthData();
+
+  UI.renderCommissionSummary(monthData);
+  UI.renderMonthlyBonus(state.bonusData);
+  UI.renderMonthsList(state.months, state.currentMonthId);
   showTab("commissions");
 
-  // Register Service Worker for offline support
-  if ('serviceWorker' in navigator) {
-    try {
-      await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered');
-    } catch (e) {
-      console.log('Service Worker registration failed:', e);
-    }
+  // Try to load current month if exists
+  if (state.months[currentMonth]) {
+    StateManager.update(s => ({ ...s, currentMonthId: currentMonth }));
+    Events.hydrateMonthInputs(state.months[currentMonth]);
   }
 }
 
